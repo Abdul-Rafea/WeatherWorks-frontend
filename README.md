@@ -1,9 +1,11 @@
-About Weatherworks
+# About Weatherworks
+
 Weatherworks is a weather application with social features to help understand weather conditions from community-based insights provided by its users.
 
-Weatherworks uses the OpenWeatherMap API to fetch weather and geocoding data.
+Weatherworks uses the [OpenWeatherMap](https://openweathermap.org/) API to fetch weather and geocoding data.
 
-Credits
-Abdul Rafea - Frontend
+# Credits
+[Abdul Rafea](https://github.com/Abdul-Rafea) - Frontend
 
-denpatech, XTCooper - Backend
+[denpatech](https://github.com/denpatechdev), [XTCooper](https://github.com/XTCooper11) - Backend
+
