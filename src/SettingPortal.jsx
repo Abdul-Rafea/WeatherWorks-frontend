@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 
 function SettingPortal({ children }) {
         const portalRef = useRef(null);

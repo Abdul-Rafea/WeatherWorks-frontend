@@ -7,7 +7,7 @@ function Header(){
                 <img src={WeatherWorks_logo} alt="WeatherWorks Logo" className="w-full h-auto" />
             </button>
             <div className="w-5/10 h-auto bg-[#3E3245] rounded-3xl p-3 m-1 flex justify-start items-center shadow-[2px_4px_5px_0_#00000040]">
-                <img src={Search_icon} alt="Search icon" className="w-auto h-full"></img>
+                {/* <img src={Search_icon} alt="Search icon" className="w-auto h-full"></img> */}
                 <div className='w-full h-auto text-left pl-3 plus-jakarta-sans font-medium text-[#7e7c7c] text-1xl'>Search City...</div>
             </div>
             <button className="w-15/100 h-auto flex justify-center items-center p-1">    
