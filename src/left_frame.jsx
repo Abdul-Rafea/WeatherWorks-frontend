@@ -1,7 +1,5 @@
 import Light_Rain_Day from './assets/Light_Rain_Day.svg';
 import Rain_Icon from './assets/Rain_Icon.svg';
-import Min_Temp_Icon from './assets/Min_Temp_Icon.svg';
-import Max_Temp_Icon from './assets/Max_Temp_Icon.svg';
 import Humidity_Icon from './assets/Humidity_Icon.svg';
 import Wind_Speed_Icon from './assets/Wind_Speed_Icon.svg';
 import Button from './button.jsx';
