@@ -1,5 +1,4 @@
 import WeatherWorks_logo from "./assets/WeatherWorks_logo.png";
-import Search_icon from './assets/Search_icon.svg';
 
 function Header(){
     return(

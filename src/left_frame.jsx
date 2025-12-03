@@ -1,9 +1,4 @@
-import Light_Rain_Day from './assets/Light_Rain_Day.svg';
-import Rain_Icon from './assets/Rain_Icon.svg';
-import Humidity_Icon from './assets/Humidity_Icon.svg';
-import Wind_Speed_Icon from './assets/Wind_Speed_Icon.svg';
 import Button from './button.jsx';
-
 import React, { useState } from "react";
 import Portal from './SettingPortal.jsx';
 import PageSetting from './PageSetting.jsx';

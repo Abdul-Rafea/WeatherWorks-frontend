@@ -1,14 +1,3 @@
-import Light_Rain_Day from './assets/Light_Rain_Day.svg';
-import Light_Rain_Night from './assets/Light_Rain_Night.svg';
-import Heavy_Rain from './assets/Heavy_Rain.svg';
-//import Windy_Day from './assets/Windy_Day.svg';
-import Windy_Night from './assets/Windy_Night.svg';
-import Thunderstrom from './assets/Thunderstorm.svg';
-import Clear_Day from './assets/Clear_Day.svg';
-import CLear_NIght from './assets/Clear_Night.svg';
-import Cloudy from './assets/Cloudy.svg';
-import Windy_CLoudy from './assets/Windy_Cloudy.svg';
-
 function Weekframe(){
     const Weather = Windy_Night;
     const Day = "Mon";
