@@ -3,7 +3,7 @@ import Search_icon from './assets/Search_icon.svg';
 
 function Header(){
     return(
-        <div className="w-97/100 h-auto flex justify-evenly items-center bg-[#524A79] rounded-3xl p-1 mt-1">
+        <div className="w-97/100 h-auto flex justify-evenly items-center bg-[#232D3F] rounded-3xl p-1 mt-2">
             <button className="w-15/100 h-auto flex justify-center items-center">
                 <img src={WeatherWorks_logo} alt="WeatherWorks Logo" className="w-full h-auto" />
             </button>

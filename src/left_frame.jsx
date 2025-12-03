@@ -4,6 +4,7 @@ import Min_Temp_Icon from './assets/Min_Temp_Icon.svg';
 import Max_Temp_Icon from './assets/Max_Temp_Icon.svg';
 import Humidity_Icon from './assets/Humidity_Icon.svg';
 import Wind_Speed_Icon from './assets/Wind_Speed_Icon.svg';
+import Button from './button.jsx';
 
 import React, { useState } from "react";
 import Portal from './SettingPortal.jsx';
@@ -12,18 +13,17 @@ import PageSetting from './PageSetting.jsx';
 function LeftFrame(){
     const [settingActive, setSettingActive] = useState(false);
     
-    const settingOpen = () => setSettingActive(true);
-    const settingClose = () => setSettingActive(false); 
+    const delayedOpen = () => setSettingActive(true);
+    const settingOpen = () => {setTimeout(delayedOpen,200)}
+    const delayedClose = () => setSettingActive(false);
+    const settingClose = () => {setTimeout(delayedClose,200)}
+
 
     return(
-        <div className="w-full h-auto m-2 bg-[#524A79] rounded-3xl flex justify-start items-center flex-col">
+        <div className="w-full h-auto m-2 bg-[#232D3F] rounded-3xl flex justify-start items-center flex-col">
             <div className="w-full h-auto flex justify-between items-center p-3">
-                <button className="w-3/10 height-auto rounded-full flex justify-center items-center bg-[#ffffff]">
-                    Menu_icon
-                </button>
-                <button onClick={settingOpen} className="w-3/10 height-auto rounded-full flex justify-center items-center bg-[#ffffff]">
-                    Setting_icon
-                </button>
+                <Button text="Menu" customClass="m-4" />
+                <Button action={settingOpen} text="Settings" customClass="m-4" />
                     {settingActive && (
                         <Portal>
                             <PageSetting onClose={settingClose} /> 
@@ -51,7 +51,7 @@ function LeftFrame(){
                     <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Max Temp - 32°C</div>
                 </div>
             </div>
-            <div className="w-9/10 h-auto flex justify-between items-center bg-[#3E3245] p-2 mb-5 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
+            <div className="w-9/10 h-auto flex justify-between items-center bg-[#005B41] p-2 mb-5 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
                 <div className="w-1/2 h-full flex justify-center items-center">
                     <img src={Humidity_Icon} alt="Humidity Icon" className="w-4/10 h-auto" />
                     <div className="w-6/10 h-auto flex justify-left items-center flex-col">

@@ -7,25 +7,17 @@ function SettingPortal({ children }) {
 
     useEffect(() => {
         if (!portalRef.current){
-            const settingContainer = document.createElement('div');
+            portalRef.current = document.createElement('div');
         }
-        
-        settingContainer.style.position = 'fixed';
-        settingContainer.style.top = '0';
-        settingContainer.style.left = '0';
-        settingContainer.style.width = '100vw';
-        settingContainer.style.height = '100vh';
-        settingContainer.style.zIndex = '9999';
-        settingContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent backdrop
-        settingContainer.style.display = 'flex';
-        settingContainer.style.justifyContent = 'center';
-        settingContainer.style.alignItems = 'center';
+
+        const settingContainer = portalRef.current;
+        settingContainer.className = 'fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center'
 
         document.body.appendChild(settingContainer);
         setIsMounted(true); 
 
         return () => {
-                if (settingContainer && document.body.contains(portalRef.current)) {
+                if (settingContainer && document.body.contains(settingContainer)) {
                     document.body.removeChild(settingContainer);
                 }
 
@@ -33,7 +25,7 @@ function SettingPortal({ children }) {
         };
     }, []);
 
-    if (!portalRef.current || !isMounted) {
+    if (!isMounted || !portalRef.current) {
         return null;
     }
 
