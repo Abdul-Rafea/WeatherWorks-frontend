@@ -1,7 +1,7 @@
 import Button from './button.jsx';
 import React, { useState } from "react";
 import Portal from './generatePortal.jsx';
-import PageSetting from './pageSetting.jsx';
+import PageSetting from './PageSetting.jsx';
 
 function LeftFrame({temp, city}){
 
