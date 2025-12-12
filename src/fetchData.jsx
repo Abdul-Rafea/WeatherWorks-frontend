@@ -24,8 +24,9 @@ function FetchData({onDataFetch}) {
 
                 if(!response.ok && !aqiResponse.ok){
                     throw new Error(`Http eror! status: ${response.status}`);
+                }
+                if(!aqiResponse.ok){
                     throw new Error(`Http eror! status: ${aqiResponse.status}`);
-
                 }
 
                 const data1 = await response.json();
@@ -36,6 +37,7 @@ function FetchData({onDataFetch}) {
             }
             catch(e){
                 setError(e.message);
+                console.error("Data Fetch Error:", e.message);
             }
             finally{
                 setLoading(false);
@@ -55,6 +57,7 @@ function FetchData({onDataFetch}) {
             const pressure = weatherData?.current.pressure_mb;
             const sunrise = weatherData?.forecast.forecastday[0].astro.sunrise;
             const sunset = weatherData?.forecast.forecastday[0].astro.sunset;
+
             const processedData = {
                 tempC: tempC,
                 city: city,
@@ -73,11 +76,17 @@ function FetchData({onDataFetch}) {
 
     return (
         
-        loading && (
+        error? (
+            <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center">
+            <div className="w-1/2 h-auto p-5 bg-white rounded-2xl flex justify-center items-center flex-col shadow-[2px_4px_5px_0_#00000040]">
+                Data Loading Failed: {error}
+            </div>
+            </Portal>
+        ) : (loading ? (
             <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center">
                 <LoadingFrame />
             </Portal>
-        )
+        ) : null)
     )
 
 
