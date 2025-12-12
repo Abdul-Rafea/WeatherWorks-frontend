@@ -15,7 +15,7 @@ function FetchData({onDataFetch}) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const weatherAPI_URL = `http://api.weatherapi.com/v1/current.json?key=${weatherAPI_key}&q=${city}`;
+        const weatherAPI_URL = `http://api.weatherapi.com/v1/forecast.json?key=${weatherAPI_key}&q=${city}&days=1&aqi=no&alerts=no`;
         const aqiAPI_URL = `https://api.waqi.info/feed/${city}/?token=${aqiAPI_key}`;
         async function fetchData() {
             try{
@@ -53,12 +53,16 @@ function FetchData({onDataFetch}) {
             const aqi = aqiData?.data.aqi;
             const unIndex = weatherData?.current.uv;
             const pressure = weatherData?.current.pressure_mb;
+            const sunrise = weatherData?.forecast.forecastday[0].astro.sunrise;
+            const sunset = weatherData?.forecast.forecastday[0].astro.sunset;
             const processedData = {
                 tempC: tempC,
                 city: city,
                 aqi: aqi,
                 uvIndex: unIndex,
-                pressure: pressure
+                pressure: pressure,
+                sunrise: sunrise,
+                sunset: sunset
             };
             onDataFetch(processedData);
         }

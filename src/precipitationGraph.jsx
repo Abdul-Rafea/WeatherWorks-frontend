@@ -10,27 +10,29 @@ const graphData = [
     {time: '4PM', precipitation: 12},
     {time: '5PM', precipitation: 25},
 ];
-const precipitaionGraph = () => {
-    <ResponsiveContainer width="100%" height={300}>
-        <lineChart data={graphData} margin= {{top: 5, right: 30, left: 20, bottom :5}}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#555" />
-            <XAxis dataKey="time" stroke="#AAA" />
-            <YAxis
-                label = {{vale: 'Precipitaion', angle: -90, position: 'insideLeft', fill: '#AAA'}}
-                domain = {[0,100]}
-                stroke="#AAA"
-            />
-            <Tooltip />
-            <Line
-                type="monotone"
-                dataKey="precipitation"
-                stroke= "#d1a04d"
-                strokeWidth={3}
-                dot= {false}
-                activeDot= {{r:8}} 
-            />
-        </lineChart>
-    </ResponsiveContainer>
+function precipitaionGraph() {
+    return(
+        <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={graphData} margin= {{top: 0, right:20, left:-27, bottom :0}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#555" />
+                <XAxis dataKey="time" stroke="#ffffff" />
+                <YAxis
+                    label = {{vale: 'Precipitaion', angle: -90, position: 'insideLeft', fill: '#ffffff'}}
+                    domain = {[0,100]}
+                    stroke="#ffffff"
+                />
+                <Tooltip />
+                <Line
+                    type="monotone"
+                    dataKey="precipitation"
+                    stroke= "#d1a04d"
+                    strokeWidth={5}
+                    dot= {false}
+                    activeDot= {{r:8}} 
+                />
+            </LineChart>
+        </ResponsiveContainer>
+    )
 }
 
 export default precipitaionGraph;

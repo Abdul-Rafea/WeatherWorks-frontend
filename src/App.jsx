@@ -5,7 +5,7 @@ import FetchData from "./fetchData";
 import React, { useState } from "react";
 
 function App() {
-    const [weatherProps, setWeatherProps] = useState({tempC: null, city: null, aqi: null, uvIndex: null, pressure: null});
+    const [weatherProps, setWeatherProps] = useState({tempC: null, city: null, aqi: null, uvIndex: null, pressure: null, sunrise: null, sunset: null});
     const getData = (data) => {
         setWeatherProps(data);
     }
@@ -15,7 +15,7 @@ function App() {
             <FetchData onDataFetch={getData} />
             <Header />
             <LeftFrame temp = {weatherProps.tempC} city = {weatherProps.city} />
-            <RightFrame aqi = {weatherProps.aqi} uvIndex = {weatherProps.uvIndex} pressure = {weatherProps.pressure} />
+            <RightFrame aqi = {weatherProps.aqi} uvIndex = {weatherProps.uvIndex} pressure = {weatherProps.pressure} sunrise = {weatherProps.sunrise} sunset = {weatherProps.sunset} />
         </>
     )
 }

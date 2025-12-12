@@ -13,7 +13,7 @@ function LeftFrame({temp, city}){
     const settingClose = () => {setTimeout(delayedClose,200)}
 
     return(
-        <div className="w-full h-auto bg-[#948979] rounded-3xl flex justify-start items-center flex-col mt-2 mb-2">
+        <div className="w-full h-auto bg-[#412B6B] rounded-3xl flex justify-start items-center flex-col mt-2 mb-2">
             <div className="w-full h-auto flex justify-between items-center p-3">
                 <Button text="Menu" customClass="m-4" />
                 <Button action={settingOpen} text="Settings" customClass="m-4" />
@@ -44,7 +44,7 @@ function LeftFrame({temp, city}){
                     <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Max Temp - 32°C</div>
                 </div>
             </div>
-            <div className="w-9/10 h-auto flex justify-between items-center bg-[#393E46] p-393E46 mb-5 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
+            <div className="w-9/10 h-auto flex justify-between items-center bg-[#5C3E94] p-393E46 mb-5 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
                 <div className="w-1/2 h-full flex justify-center items-center">
                     {/* <img src={Humidity_Icon} alt="Humidity Icon" className="w-4/10 h-auto" /> */}
                     <div className="w-6/10 h-auto flex justify-left items-center flex-col">
