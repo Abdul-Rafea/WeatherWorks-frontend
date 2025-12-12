@@ -15,14 +15,14 @@ function FetchData({onDataFetch}) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const weatherAPI_URL = `http://api.weatherapi.com/v1/forecast.json?key=${weatherAPI_key}&q=${city}&days=1&aqi=no&alerts=no`;
+        const weatherAPI_URL = `https://api.weatherapi.com/v1/forecast.json?key=${weatherAPI_key}&q=${city}&days=1&aqi=no&alerts=no`;
         const aqiAPI_URL = `https://api.waqi.info/feed/${city}/?token=${aqiAPI_key}`;
         async function fetchData() {
             try{
                 const response = await fetch(weatherAPI_URL);  
                 const aqiResponse = await fetch(aqiAPI_URL);  
 
-                if(!response.ok && !aqiResponse.ok){
+                if(!response.ok){
                     throw new Error(`Http eror! status: ${response.status}`);
                 }
                 if(!aqiResponse.ok){
