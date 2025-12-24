@@ -1,23 +1,15 @@
-import LeftFrame from "./leftFrame";
-import RightFrame from "./rightFrame";
-import Header from "./header";
-import FetchData from "./fetchData";
-import React, { useState } from "react";
+import LandingPage from "./LandingPage";
+import Dashboard from "./Dashboard";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-    const [weatherProps, setWeatherProps] = useState({tempC: null, city: null, aqi: null, uvIndex: null, pressure: null, sunrise: null, sunset: null});
-    const getData = (data) => {
-        setWeatherProps(data);
-    }
-    
-    return (
-        <>
-            <FetchData onDataFetch={getData} />
-            <Header />
-            <LeftFrame temp = {weatherProps.tempC} city = {weatherProps.city} />
-            <RightFrame aqi = {weatherProps.aqi} uvIndex = {weatherProps.uvIndex} pressure = {weatherProps.pressure} sunrise = {weatherProps.sunrise} sunset = {weatherProps.sunset} />
-        </>
-    )
+    return(
+        <Router>
+            <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+        </Router>
+    )   
 }
-
 export default App;

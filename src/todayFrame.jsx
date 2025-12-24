@@ -90,7 +90,7 @@ function todayFrame(props){
     }
     
 return(
-        <div className="w-full h-auto mt-3 p-5 flex justify-center items-center flex-wrap bg-[#5C3E94] rounded-2xl shadow-[2px_4px_5px_0_#00000040]">
+        <div className="w-full h-auto mt-3 p-5 flex justify-center items-center flex-wrap bg-[#4CB8CC] rounded-2xl shadow-[2px_4px_5px_0_#00000040]">
             <div className="w-9/10 h-auto flex justify-left items-center text-2xl font-semibold text-[#ffffff]">{props.heading}</div>
             <div className="w-9/10 h-auto mt-2 mb-2 text-left text-5xl font-bold text-[#ffffff]">{value}</div>
             <div className={`w-9/10 h-auto text-left text-4xl font-semibold ${textColor}`}>{Quality}</div>

@@ -41,7 +41,7 @@ function Rightframe(props){
     );
 
     return(
-        <div className="w-full h-auto p-5 bg-[#412B6B] rounded-3xl flex justify-center items-center flex-wrap">
+        <div className="w-full h-auto p-5 bg-[#1C8EA3] rounded-3xl flex justify-center items-center flex-wrap">
             <div className="w-9/10 h-auto flex justify-left items-center gap-x-5">
                 <button onClick={() => handleViewChange('today')} className={`w-auto h-auto text-2xl text-center text-[#ffffff] plus-jakarta-sans font-medium opacity-60 border-b-2 border-transparent cursor-pointer
                     ${activeView === 'today' ? 'opacity-100 border-b-2 border-white' : 
@@ -53,11 +53,11 @@ function Rightframe(props){
             <div className="w-full h-auto flex justify-center items-center flex-wrap">
                 {activeView === 'today' ? todayContent : weekContent}
             </div>
-            <div className="w-full h-auto flex justify-center items-center flex-wrap bg-[#5C3E94] rounded-2xl mt-3 p-5 pb-2 shadow-[2px_4px_5px_0_#00000040]">
+            <div className="w-full h-auto flex justify-center items-center flex-wrap bg-[#4CB8CC] rounded-2xl mt-3 p-5 pb-2 shadow-[2px_4px_5px_0_#00000040]">
                 <div className="w-9/10 h-auto text-left text-[#ffffff] text-2xl font-bold mb-4">Precipitaion</div>
                 <PrecipitaionGraph />
             </div>
-            <div className="w-full h-auto flex justify-center items-center flex-wrap bg-[#5C3E94] rounded-2xl mt-3 p-5 shadow-[2px_4px_5px_0_#00000040]">
+            <div className="w-full h-auto flex justify-center items-center flex-wrap bg-[#4CB8CC] rounded-2xl mt-3 p-5 shadow-[2px_4px_5px_0_#00000040]">
                 <div className="w-9/10 h-auto text-left text-2xl text-[#ffffff] font-bold ">Sunrise & Sunset</div>
                 <div className="w-9/10 h-auto flex  justify-center items-center gap-3 t mt-2 mb-2">
                     <svg className="flex-shrink-0 flex"

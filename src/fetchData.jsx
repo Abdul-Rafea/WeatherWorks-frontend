@@ -57,6 +57,8 @@ function FetchData({onDataFetch}) {
             const pressure = weatherData?.current.pressure_mb;
             const sunrise = weatherData?.forecast.forecastday[0].astro.sunrise;
             const sunset = weatherData?.forecast.forecastday[0].astro.sunset;
+            const weatherCode = weatherData?.current.condition.code;
+            const weatherCondition = weatherData?.current.condition.text;
 
             const processedData = {
                 tempC: tempC,
@@ -65,7 +67,9 @@ function FetchData({onDataFetch}) {
                 uvIndex: unIndex,
                 pressure: pressure,
                 sunrise: sunrise,
-                sunset: sunset
+                sunset: sunset,
+                weatherCode: weatherCode,
+                weatherCondition: weatherCondition
             };
             onDataFetch(processedData);
         }
@@ -74,18 +78,17 @@ function FetchData({onDataFetch}) {
     }, [weatherData]);
 
 
-    return (
-        
+    return (  
         error? (
-            <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center">
-            <div className="w-1/2 h-auto p-5 bg-white rounded-2xl flex justify-center items-center flex-col shadow-[2px_4px_5px_0_#00000040]">
-                Data Loading Failed: {error}
-            </div>
-            </Portal>
+             <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center">
+             <div className="w-1/2 h-auto p-5 bg-white rounded-2xl flex justify-center items-center flex-col shadow-[2px_4px_5px_0_#00000040]">
+                 Data Loading Failed: {error}
+             </div>
+             </Portal>
         ) : (loading ? (
-            <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0F99] flex justify-center items-center">
-                <LoadingFrame />
-            </Portal>
+             <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0Fbf] flex justify-center items-center">
+                 <LoadingFrame />
+             </Portal>
         ) : null)
     )
 
