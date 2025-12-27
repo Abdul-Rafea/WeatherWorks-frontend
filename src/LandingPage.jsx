@@ -18,7 +18,7 @@ function LandingPage() {
                             sm:text-3xl xl:text-2xl">Dashboard</button>
                     </Link>
                     <div className="w-auto h-auto flex justify-center itmes-center gap-2">
-                        <Link to="/SignUp" className="w-auto h-auto bg-[#1C8EA3] rounded-3xl p-3 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#7FDEF1]
+                        <Link to="/signup" className="w-auto h-auto bg-[#1C8EA3] rounded-3xl p-3 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#7FDEF1]
                             sm:p-5 xl:p-4">
                             <button className="w-full h-auto text-center text-xl text-[#F2F2F2] plus-jakarta-sans font-medium
                                 sm:text-3xl xl:text-2xl">Sign Up</button>
@@ -91,7 +91,7 @@ function LandingPage() {
                     sm:h-2 ml-3 mr-3"></div>
                 <div className="w-full h-auto flex items-center flex-wrap">
                     <img src={WeatherWorksLogo} alt="WeatherWorks Logo" className="w-1/4 h-auto
-                        sm:w-1/5"/>
+                        sm:w-1/5 xl:w-5/50"/>
                     <p className="w-full h-auto text-xl text-[#000000] font-medium ml-2
                     sm:text-2xl">&copy; 2026 WeatherWorks, All rights reserved</p>
                 </div>
