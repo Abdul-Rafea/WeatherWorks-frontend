@@ -1,9 +1,11 @@
 import LeftFrame from "./leftFrame";
 import RightFrame from "./rightFrame";
 import FetchData from "./fetchData";
+import Portal from "./generatePortal";
+
 import { useState } from "react";
 
-function Dashboard() {
+function Dashboard(){
     const [weatherProps, setWeatherProps] = useState(
         {tempC: null, city: null, aqi: null, uvIndex: null, pressure: null, sunrise: null, sunset: null, weatherCode: null, weatherCondition: null}
      );
@@ -14,7 +16,6 @@ function Dashboard() {
     
     return (
         <>
-            <FetchData onDataFetch={getData} />
             <LeftFrame temp = {weatherProps.tempC} city = {weatherProps.city} weatherCode = {weatherProps.weatherCode} weatherCondition = {weatherProps.weatherCondition} />
             <RightFrame aqi = {weatherProps.aqi} uvIndex = {weatherProps.uvIndex} pressure = {weatherProps.pressure} sunrise = {weatherProps.sunrise} sunset = {weatherProps.sunset} />
         </>
