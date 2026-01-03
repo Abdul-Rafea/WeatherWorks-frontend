@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 function GetCoords({onClose}){
-    const [isloading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -17,11 +16,11 @@ function GetCoords({onClose}){
 
         const handleError = (err) => {
             setError(err.message);
-            onClose(null);
+            onClose({ latitude:null, longitude:null });
         };
 
         navigator.geolocation.getCurrentPosition(handleSucess, handleError);
-    }, []);
+    }, [onClose]);
 
     
 }

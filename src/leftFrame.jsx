@@ -19,40 +19,9 @@ function LeftFrame(props){
     const delayedClose = () => setSettingActive(false);
     const settingClose = () => {setTimeout(delayedClose,200)}
 
-    const [cityName, setcityName] = useState("");
-    const [Coords , setCoords] = useState(null);
-    const [APIcall, setAPIcall] = useState(null);
-    
-    const [location, setLocation] = useState(false);
-    const [getCoords, setGetCoords] = useState(false);
-    const openGetCoords = () => setGetCoords(true);
-    const closeGetCoords = (coords) => {
-        setGetCoords(false);
-        setCoords(coords);
-        setLocation(true);
-    }
 
     return(
         <>
-            {getCoords &&(
-                <GetCoords onClose= {closeGetCoords} />
-            )}
-            {!location &&(
-                <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0Fbf] flex justify-center items-center">
-                    <div className="w-9/10 bg-[#1C8EA3] rounded-2xl flex justify-center items-center flex-wrap gap-5 p-2">
-                        <h2 className="text-2xl text-[#ffffff] text-center">Where are you?</h2>
-                        <input className="w-9/10 bg-[#D9A22B] text-3xl text-[#ffffff] rounded-2xl p-2"
-                            type="text"
-                            placeholder="Search City"
-                            value = {cityName}
-                            onChange={(e) =>{setcityName(e.target.value)}}
-                            ></input>
-                        <h1 className="w-full text-3xl text-center text-[#ffffff]">OR</h1>
-                        <h2 className="w-full text-2xl text-center text-[#ffffff]">Get you current location</h2>
-                        <button onClick={openGetCoords} className=" bg-[#D9A22B] text-2xl text-[#ffffff] rounded-2xl p-2">My location</button>
-                    </div>
-                </Portal>
-            )}
             <div className="w-full h-auto">
                 <header className="w-full h-auto flex justify-evenly items-center rounded-3xl mb-3 mt-1 ">
                     <Link to="/" className="w-2/10 h-auto flex justify-center items-center
@@ -101,9 +70,9 @@ function LeftFrame(props){
                     <div className="w-7/10 h-auto text-center plus-jakarta-sans font-bold text-6xl text-[#ffffff]
                         sm:text-[8rem]">{props.temp}°C</div>
                     <div className='w-8/10 height-auto flex justify-between items-center mt-10'>
-                        <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-4xl text-[#ffffff]
+                        <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-3xl text-[#ffffff]
                         sm:text-5xl">{props.city}</div>
-                        <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-4xl text-[#ffffff]
+                        <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-3xl text-[#ffffff]
                         sm:text-5xl">Monday</div>
                     </div>
                     <hr className="w-85/100 h-[2px] bg-[#ffffff] mt-3" />
