@@ -28,8 +28,7 @@ function Dashboard(){
         const fetchData = async() =>{
             try{
                 setIsLoading(true);
-                const response = await fetch(`/api/weather?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
-                //const response = await fetch(`http://localhost:5000/weather?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
+                const response = await fetch(`http://localhost:5000/weather?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
                 const WeatherData = await response.json();
                 setWeatherData(WeatherData);
                 setIsLoading(false);
@@ -80,8 +79,25 @@ function Dashboard(){
             )}
             {weatherData &&(
                <>
-                    <LeftFrame temp = {weatherData.tempC} city = {weatherData.city} weatherCode = {weatherData.weatherCode} weatherCondition = {weatherData.weatherText} />
-                    <RightFrame aqi = {weatherData.aqi} uvIndex = {null} pressure = {weatherData.pressure} sunrise = {weatherData.sunrise} sunset = {weatherData.sunset} />
+                    <LeftFrame 
+                    temp = {weatherData.tempC} 
+                    city = {weatherData.city} 
+                    weatherCode = {weatherData.weatherCode} 
+                    weatherCondition = {weatherData.weatherText} 
+                    feelsLike = {weatherData.feelsLikeC} 
+                    humidity = {weatherData.humidity} 
+                    windSpeed = {weatherData.windKPH}
+                    isDay = {weatherData.timeOfDay}
+                     />
+
+                    <RightFrame 
+                    aqi = {weatherData.aqi} 
+                    uvIndex = {null} 
+                    pressure = {weatherData.pressure} 
+                    sunrise = {weatherData.sunrise} 
+                    sunset = {weatherData.sunset}
+                    uv = {weatherData.uv}
+                    />
                 </>
             )}
         </>

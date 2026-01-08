@@ -23,7 +23,7 @@ function Rightframe(props){
     const todayContent = (
         <>
             <TodayFrame heading = "Air Quality Index" aqi = {props.aqi} />
-            <TodayFrame heading = "UV Index" uvIndex = {props.uvIndex} />
+            <TodayFrame heading = "UV Index" uvIndex = {props.uv} />
             <TodayFrame heading = "Pressure" pressure = {props.pressure} />
         </>
     );

@@ -10,25 +10,18 @@ import WeatherWorksLogo from "./assets/WeatherWorksLogo.png";
 function LandingPage() {
     return (
         <div className="w-full h-auto flex flex-col justify-center items-center gap-2 pb-0">
-            <header className="w-full h-auto flex justify-center items-center">
+            <header className="w-full h-auto flex justify-center items-center pl-4 pr-4">
                 <nav className="w-full h-auto flex justify-between items-center">
-                    <Link to= "/dashboard" className="w-auto h-auto bg-[#D9A22B] rounded-3xl p-3 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#FBC354]
-                        sm:p-5 xl:p-4">
+                    <Link to= "/dashboard" className="w-auto h-auto bg-[#D9A22B] rounded-2xl p-2 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#FBC354]
+                        sm:p-4 sm:rounded-3xl xl:p-3 xl:rounded-2xl">
                         <button className="w-full h-auto text-center text-xl text-[#F2F2F2] plus-jakarta-sans font-medium
                             sm:text-3xl xl:text-2xl">Dashboard</button>
                     </Link>
-                    <div className="w-auto h-auto flex justify-center itmes-center gap-2">
-                        <Link to="/signup" className="w-auto h-auto bg-[#1C8EA3] rounded-3xl p-3 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#7FDEF1]
-                            sm:p-5 xl:p-4">
-                            <button className="w-full h-auto text-center text-xl text-[#F2F2F2] plus-jakarta-sans font-medium
-                                sm:text-3xl xl:text-2xl">Sign Up</button>
-                        </Link>
-                        <Link to="/Login" className="w-auto h-auto bg-[#00000045] rounded-3xl p-3 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#FBFDF8]\
-                            sm:p-5 xl:p-4">
-                            <button className="w-full h-auto text-center text-xl text-[#000000] plus-jakarta-sans font-medium
-                                sm:text-3xl xl:text-2xl">Login</button>
-                        </Link>
-                    </div>
+                    <Link to="/login" className="w-auto h-auto bg-[#1C8EA3] rounded-2xl p-2 shadow-[2px_4px_5px_0_#00000040] cursor-pointer hover:bg-[#7FDEF1]
+                        sm:p-4 sm:rounded-3xl xl:p-3 xl:rounded-2xl">
+                        <button className="w-full h-auto text-center text-xl text-[#F2F2F2] plus-jakarta-sans font-medium
+                            sm:text-3xl xl:text-2xl">Login</button>
+                    </Link>
                 </nav>
             </header>
 

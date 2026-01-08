@@ -1,6 +1,7 @@
 import LandingPage from "./LandingPage";
 import Dashboard from "./Dashboard";
-import SignUp from "./SignUp";
+import LoginPage from "./LoginPage";
+import SignUpPage from "./SignUpPage";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { WeatherProvider } from "./WeatherContext";
@@ -12,7 +13,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signUp" element={<SignUpPage />} />
                 </Routes>
             </Router>
         </WeatherProvider>
