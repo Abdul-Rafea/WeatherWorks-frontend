@@ -1,13 +1,9 @@
-function Weekframe(){
-    // const Weather = Windy_Night;
-    const Day = "Mon";
-    const Temp = "28°C";
-
+function Weekframe(props){
     return(
-        <div className="w-30/100 h-auto p-3 mb-5 bg-[#3E3245] rounded-xl flex justify-center items-center flex-col box-border shadow-[2px_4px_5px_0_#00000040]">
-            <div className='w-auto h-auto text-center text-2xl text-[#ffffff] plus-jakarta-sans font-medium'>{Day}</div>
-            {/* <img src={Weather} alt="Weather Icon" className="w-full h-auto mt-2 mb-2" /> */}
-            <div className='w-auto h-auto text-center text-2xl text-[#ffffff] plus-jakarta-sans font-medium'>{Temp}</div>
+        <div className="p-4 bg-[#4CB8CC] rounded-xl flex justify-center items-center flex-col box-border shadow-[2px_4px_5px_0_#00000040]">
+            <div className='w-auto h-auto text-center text-2xl text-[#D9A22B] plus-jakarta-sans font-bold'>{props.day}</div>
+                <img src={props.icon} alt="Weather Icon" className="w-full mt-2 mb-2" />
+            <div className='w-auto h-auto text-center text-2xl text-[#ffffff] plus-jakarta-sans font-medium'>{props.temp}°C</div>
         </div>
     )
 }

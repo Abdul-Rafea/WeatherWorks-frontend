@@ -6,15 +6,18 @@ import Portal from './generatePortal.jsx';
 import PageSetting from './PageSetting.jsx';
 import IconMap from './IconMap.jsx';
 import GetCoords from './GetCoords.jsx';
+import SearchBar from './searchBar.jsx';
 
 import WeatherWorksLogo from "./assets/WeatherWorksLogo.png";
 import Search_Icon from "./assets/Search_Icon.png";
 
 function LeftFrame(props){
     const {setLocationCords, locationCords} = useContext(WeatherContext);
-    const [settingActive, setSettingActive] = useState(false);
     const [iconDay, setIconDay] = useState(null);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSettingOpen, setIsSettingOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const menuOpen = ()=> {
         if (isMenuOpen == false){
@@ -24,16 +27,27 @@ function LeftFrame(props){
             setIsMenuOpen(false);
         }
     }
-    const delayedOpen = () => setSettingActive(true);
-    const settingOpen = () => {setTimeout(delayedOpen,200)}
-    const delayedClose = () => setSettingActive(false);
-    const settingClose = () => {setTimeout(delayedClose,200)}
+    const settingOpen = () => {
+        if (isSettingOpen == false){
+            setIsSettingOpen(true);
+        }
+        else{
+            setIsSettingOpen(false);
+        }
+    }
+    const searchOpen = () => {
+        if (isSearchOpen == false){
+            setIsSearchOpen(true);
+        }
+        else{
+            setIsSearchOpen(false);
+        }
+    }
 
     return(
-        <>
-            <div className="w-full h-auto">
-                <header className="w-full flex justify-between items-center rounded-3xl mt-1 mb-1 pl-3 pr-3">
-                    <div className="flex gap-5">  
+            <div className="w-full mb-2">
+                <header className="w-full flex justify-between items-center rounded-3xl mt-1 mb-2 pl-3 pr-3">
+                    <div className="flex gap-1 w-2/7">
                         <div className="relative"> 
                             <button onClick={menuOpen} className="flex justify-center items-center cursor-pointer
                                 sm:w-2/10">
@@ -54,7 +68,7 @@ function LeftFrame(props){
                                     </svg>
                             </button>
                             {isMenuOpen && (
-                                <div className="absolute bg-[#1C8EA3] rounded-xl p-2 border-2 border-[#000000]">
+                                <div className="absolute bg-[#1C8EA3] rounded-xl p-2 border-2 border-[#ffffff]">
                                     <ul className="flex flex-wrap text-2xl text-[#ffffff] font-bold gap-2">
                                         <li>
                                             <Link to="/" className="flex items-center gap-2">
@@ -71,9 +85,9 @@ function LeftFrame(props){
                                                 <p>Home</p>
                                             </Link>
                                         </li>
-                                        <div className="w-full h-1 bg-[#000000] mt-1 rounded-2xl"></div>
+                                        <div className="w-full h-1 bg-[#ffffff] mt-1 rounded-2xl"></div>
                                         <li>
-                                            <div className="flex items-center gap-1.5 cursor-pointer">
+                                            <button onClick={settingOpen} className="flex items-center gap-1.5 cursor-pointer">
                                                 <svg
                                                     width={35}
                                                     height={35}
@@ -100,14 +114,22 @@ function LeftFrame(props){
                                                     />
                                                 </svg>
                                                 <p>Settings</p>
-                                            </div>
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
                             )}
                         </div>
-                        <button className="cursor-pointer">
-                            <svg
+                        <div className="w-full">
+                            <img src="src\assets\prof pic all plat.png" alt="Profile Pic" className="rounded-full" />
+                        </div>
+                    </div>
+                        <div className="relative w-5/7 flex justify-end items-center cursor-pointer">
+                        {isSearchOpen && (
+                            <SearchBar />
+                        )}
+                            <button onClick={searchOpen} className="cursor-pointer z-2 pr-2">
+                                <svg
                                 fill="#D9A22B"
                                 width={40}
                                 height={40}
@@ -118,24 +140,28 @@ function LeftFrame(props){
                                 <path
                                     d="M12.027 9.92L16 13.95 14 16l-4.075-3.976A6.465 6.465 0 016.5 13C2.91 13 0 10.083 0 6.5 0 2.91 2.917 0 6.5 0 10.09 0 13 2.917 13 6.5a6.463 6.463 0 01-.973 3.42zM1.997 6.452c0 2.48 2.014 4.5 4.5 4.5 2.48 0 4.5-2.015 4.5-4.5 0-2.48-2.015-4.5-4.5-4.5-2.48 0-4.5 2.014-4.5 4.5z"
                                     fillRule="evenodd"
-                                />                                </svg>
-                        </button>
-                    <div className="w-5/10 h-auto">
-                        <IconMap WeatherCode={props.weatherCode} />
+                                />                                
+                                </svg>
+                            </button>
+                        </div>
+                </header>
+                <div className="w-full bg-[#1C8EA3] rounded-3xl flex flex-col justify-center items-center">
+                    <div className="w-6/10 h-auto">
+                        <img src={props.icon} alt="Weather Icon" className="w-full h-auto" />
                     </div>
                     <div className="w-full h-auto text-center text-[#ffffff] text-3xl font-semibold mb-2
                         sm:text-6xl">{props.weatherCondition}</div>
                     <div className="w-7/10 h-auto text-center plus-jakarta-sans font-bold text-6xl text-[#ffffff]
                         sm:text-[8rem]">{props.temp}°C</div>
-                    <div className='w-8/10 height-auto flex justify-between items-center mt-10'>
+                    <div className='w-17/20 height-auto flex justify-between items-center mt-10'>
                         <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-3xl text-[#ffffff]
                         sm:text-5xl">{props.city}</div>
                         <div className="w-auto h-auto text-cneter plus-jakarta-sans font-light text-3xl text-[#ffffff]
-                        sm:text-5xl">Monday</div>
+                        sm:text-5xl">{props.day}</div>
                     </div>
-                    <hr className="w-85/100 h-[2px] bg-[#ffffff] mt-3" />
-                    <div className="w-8/10 h-auto flex justify-center items-center flex-col">
-                        <div className='w-full h-auto flex justify-left items-center mt-10'>
+                    <div className="w-9/10 h-1 bg-[#D9A22B] mt-3"></div>
+                    <div className="w-85/100 h-auto flex justify-center items-center flex-col mt-7 mb-7 gap-3">
+                        <div className="w-full flex items-center">
                             {props.isDay == 0 ?
                                 <>
                                     <svg
@@ -151,11 +177,11 @@ function LeftFrame(props){
                                     d="M3.39703 11.6315C3.39703 16.602 7.42647 20.6315 12.397 20.6315C15.6858 20.6315 18.5656 18.8664 20.1358 16.23C16.7285 17.3289 12.6922 16.7548 9.98282 14.0455C7.25201 11.3146 6.72603 7.28415 7.86703 3.89293C5.20697 5.47927 3.39703 8.38932 3.39703 11.6315ZM21.187 13.5851C22.0125 13.1021 23.255 13.6488 23 14.5706C21.7144 19.2187 17.4543 22.6315 12.397 22.6315C6.3219 22.6315 1.39703 17.7066 1.39703 11.6315C1.39703 6.58874 4.93533 2.25845 9.61528 0.999986C10.5393 0.751502 11.0645 1.99378 10.5641 2.80935C8.70026 5.84656 8.83194 10.0661 11.397 12.6312C13.9319 15.1662 18.1365 15.3702 21.187 13.5851Z"
                                     fill="#ffffff"
                                     />
-                                </svg>
-                                <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Night</div>
-                            </>
-                            : <>
-                                <svg
+                                    </svg>
+                                    <div className="pl-1 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Night</div>
+                                </>
+                            :   <>
+                                    <svg
                                     width={50}
                                     height={50}
                                     viewBox="0 0 24 24"
@@ -169,11 +195,11 @@ function LeftFrame(props){
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     />
-                                </svg>
-                                <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Day</div>
-                            </>}
+                                    </svg>
+                                    <div className="pl-1 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Day</div>
+                                </>}
                         </div>
-                        <div className='w-full h-auto flex justify-left items-center mt-5 mb-5'>
+                        <div className='w-19/20 flex items-center'>
                             <svg
                                 width={40}
                                 height={40}
@@ -189,27 +215,11 @@ function LeftFrame(props){
                                     strokeLinejoin="round"
                                 />
                             </svg>
-                            <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Feels Like:&nbsp;{props.feelsLike}°C</div>
-                        </div>
-                        <div className='w-full h-auto flex justify-left items-center mb-10'>
-                            <svg
-                                width={40}
-                                height={40}
-                                viewBox="0 0 17 22"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                >
-                                <path
-                                    d="M2.8 12.5528L3.3721 13.373C3.64022 13.186 3.8 12.8797 3.8 12.5528H2.8ZM7.6 12.5528H6.6C6.6 12.8373 6.72113 13.1082 6.93309 13.2979L7.6 12.5528ZM5.2 15C4.64772 15 4.2 15.4477 4.2 16C4.2 16.5523 4.64772 17 5.2 17V15ZM5.25625 17C5.80853 17 6.25625 16.5523 6.25625 16C6.25625 15.4477 5.80853 15 5.25625 15V17ZM8.4 16C8.4 17.7673 6.96731 19.2 5.2 19.2V21.2C8.07188 21.2 10.4 18.8719 10.4 16H8.4ZM5.2 19.2C3.43269 19.2 2 17.7673 2 16H0C0 18.8719 2.32812 21.2 5.2 21.2V19.2ZM2 16C2 14.9134 2.54063 13.953 3.3721 13.373L2.2279 11.7326C0.883186 12.6706 0 14.2321 0 16H2ZM6.93309 13.2979C7.27794 13.6066 7.6596 14.0702 7.95026 14.5879C8.2462 15.115 8.4 15.6123 8.4 16H10.4C10.4 15.1438 10.0834 14.302 9.69418 13.6088C9.29965 12.9061 8.78131 12.2681 8.26691 11.8077L6.93309 13.2979ZM6.6 3.4V12.5528H8.6V3.4H6.6ZM3.8 12.5528V3.39843H1.8V12.5528H3.8ZM5.2 2C5.9732 2 6.6 2.6268 6.6 3.4H8.6C8.6 1.52223 7.07777 0 5.2 0V2ZM5.2 0C3.32308 0 1.8 1.51981 1.8 3.39843H3.8C3.8 2.62608 4.42595 2 5.2 2V0ZM5.2 17H5.25625V15H5.2V17ZM14.4 5.8C14.4 6.5732 13.7732 7.2 13 7.2V9.2C14.8778 9.2 16.4 7.67777 16.4 5.8H14.4ZM13 7.2C12.2268 7.2 11.6 6.5732 11.6 5.8H9.6C9.6 7.67777 11.1222 9.2 13 9.2V7.2ZM11.6 5.8C11.6 5.0268 12.2268 4.4 13 4.4V2.4C11.1222 2.4 9.6 3.92223 9.6 5.8H11.6ZM13 4.4C13.7732 4.4 14.4 5.0268 14.4 5.8H16.4C16.4 3.92223 14.8778 2.4 13 2.4V4.4Z"
-                                    fill="white"
-                                />
-                            </svg>
-
-                            <div className="pl-3 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Max Temp - 32°C</div>
+                            <div className="pl-1 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Feels like-{props.feelsLike}°C</div>
                         </div>
                     </div>
-                    <div className="w-9/10 h-auto flex justify-between items-center bg-[#D9A22B] p-1 mb-5 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
-                        <div className="w-1/2 h-full flex justify-center items-center">
+                    <div className="w-9/10 h-auto flex justify-between items-center bg-[#D9A22B] p-2 pl-4 pr-4 mb-7 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
+                        <div className="w-1/2 flex items-center">
                             <svg
                                 width={60}
                                 height={60}
@@ -227,7 +237,7 @@ function LeftFrame(props){
                                 <div className="w-full h-auto text-left text-[#ffffff] text-1xl pl-2  box-border text-extralight">Humidity</div>
                             </div>
                         </div>
-                        <div className="w-1/2 h-full flex justify-center items-center">
+                        <div className="w-1/2 flex items-center">
                             <svg
                                 width={60}
                                 height={60}
@@ -248,8 +258,7 @@ function LeftFrame(props){
                     </div>
                 </div>
             </div>
-        </>
-    )
+    );
 }
 
 export default LeftFrame;

@@ -15,20 +15,23 @@ function Dashboard(){
     const [Coords , setCoords] = useState({latitude: null, longitude: null});
     const [location, setLocation] = useState(false);
     const [getCoords, setGetCoords] = useState(false);
-
+    const [fetchType, setFetchType] = useState("weather");
+ 
     const openGetCoords = () => setGetCoords(true);
     const closeGetCoords = (coords) => {
         setGetCoords(false);
         setCoords(coords);
         setLocation(true);
     }
-    
+    const changeFetchType = () => {
+        
+    }
 
     useEffect(() => {
         const fetchData = async() =>{
             try{
                 setIsLoading(true);
-                const response = await fetch(`http://localhost:5000/weather?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
+                const response = await fetch(`http://localhost:5000/${fetchType}?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
                 const WeatherData = await response.json();
                 setWeatherData(WeatherData);
                 setIsLoading(false);
@@ -79,7 +82,7 @@ function Dashboard(){
             )}
             {weatherData &&(
                <>
-                    <LeftFrame 
+                <LeftFrame 
                     temp = {weatherData.tempC} 
                     city = {weatherData.city} 
                     weatherCode = {weatherData.weatherCode} 
@@ -88,15 +91,19 @@ function Dashboard(){
                     humidity = {weatherData.humidity} 
                     windSpeed = {weatherData.windKPH}
                     isDay = {weatherData.timeOfDay}
-                     />
+                    day = {weatherData.day}
+                    icon = {weatherData.icon}
+                 />
 
-                    <RightFrame 
+                <RightFrame 
                     aqi = {weatherData.aqi} 
                     uvIndex = {null} 
                     pressure = {weatherData.pressure} 
                     sunrise = {weatherData.sunrise} 
                     sunset = {weatherData.sunset}
                     uv = {weatherData.uv}
+                    precipData = {weatherData.precipData}
+                    weekData = {weatherData.weekData}
                     />
                 </>
             )}
