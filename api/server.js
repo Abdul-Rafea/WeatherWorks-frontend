@@ -80,7 +80,7 @@ app.get('/weather', async (req, res) => {
             weekData: forecastData,
         });
     }
-    catch(error){
+    catch (error){
         console.error(error.message);
         res.status(500).json({message: "API error"});
     }
@@ -89,22 +89,20 @@ app.get('/weather', async (req, res) => {
 app.get('/city-search', async (req, res) => {
     try{
         const geoAPI_key = process.env.GEO_API_KEY;
-        const cityText = res.query.cityText;
+        const cityText = req.query.cityText;
         
-        const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${cityText}&apiKey=${geoAPI_key}`);
+        const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${cityText}&limit=5&format=json&apiKey=${geoAPI_key}`);
         
         const loactaions = geoResponse.data.results.map((item) => ({
             city: item.city,
             country: item.country,
             lat: item.lat,
             lon: item.lon,
-        }))
+        }));
         
-        res.json({
-
-        })
+        res.json(loactaions);
     }
-    catch{
+    catch (error){
         console.error(error.message);
         res.status(500).json({message: "City search failed"});
     }

@@ -85,12 +85,11 @@ function Dashboard(){
                 <LeftFrame 
                     temp = {weatherData.tempC} 
                     city = {weatherData.city} 
-                    weatherCode = {weatherData.weatherCode} 
-                    weatherCondition = {weatherData.weatherText} 
-                    feelsLike = {weatherData.feelsLikeC} 
+                    weather_condition = {weatherData.weatherText} 
+                    feels_like = {weatherData.feelsLikeC} 
                     humidity = {weatherData.humidity} 
-                    windSpeed = {weatherData.windKPH}
-                    isDay = {weatherData.timeOfDay}
+                    wind_speed = {weatherData.windKPH}
+                    is_day = {weatherData.timeOfDay}
                     day = {weatherData.day}
                     icon = {weatherData.icon}
                  />

@@ -126,7 +126,7 @@ function LeftFrame(props){
                     </div>
                         <div className="relative w-5/7 flex justify-end items-center cursor-pointer">
                         {isSearchOpen && (
-                            <SearchBar />
+                            <SearchBar styling = "absolute right-0 z-1 w-4/5 bg-[#1C8EA3] rounded-3xl text-2xl text-[#ffffff] font-medium" />
                         )}
                             <button onClick={searchOpen} className="cursor-pointer z-2 pr-2">
                                 <svg
@@ -150,7 +150,7 @@ function LeftFrame(props){
                         <img src={props.icon} alt="Weather Icon" className="w-full h-auto" />
                     </div>
                     <div className="w-full h-auto text-center text-[#ffffff] text-3xl font-semibold mb-2
-                        sm:text-6xl">{props.weatherCondition}</div>
+                        sm:text-6xl">{props.weather_condition}</div>
                     <div className="w-7/10 h-auto text-center plus-jakarta-sans font-bold text-6xl text-[#ffffff]
                         sm:text-[8rem]">{props.temp}°C</div>
                     <div className='w-17/20 height-auto flex justify-between items-center mt-10'>
@@ -162,7 +162,7 @@ function LeftFrame(props){
                     <div className="w-9/10 h-1 bg-[#D9A22B] mt-3"></div>
                     <div className="w-85/100 h-auto flex justify-center items-center flex-col mt-7 mb-7 gap-3">
                         <div className="w-full flex items-center">
-                            {props.isDay == 0 ?
+                            {props.is_day == 0 ?
                                 <>
                                     <svg
                                     width={40}
@@ -215,10 +215,10 @@ function LeftFrame(props){
                                     strokeLinejoin="round"
                                 />
                             </svg>
-                            <div className="pl-1 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Feels like-{props.feelsLike}°C</div>
+                            <div className="pl-1 plus-jakarta-sans font-light text-3xl text-[#ffffff]">Feels like-{props.feels_like}°C</div>
                         </div>
                     </div>
-                    <div className="w-9/10 h-auto flex justify-between items-center bg-[#D9A22B] p-2 pl-4 pr-4 mb-7 rounded-xl box-border shadow-[2px_4px_5px_0_#00000040]">
+                    <div className="w-9/10 h-auto flex justify-between items-center bg-[#D9A22B] p-2 pl-4 pr-4 mb-7 rounded-xl shadow-[2px_4px_5px_0_#00000040]">
                         <div className="w-1/2 flex items-center">
                             <svg
                                 width={60}
