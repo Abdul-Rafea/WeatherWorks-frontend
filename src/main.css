@@ -1,4 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Iceberg&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-iceberg: "Iceberg", cursive;
+
+  --color-offWhite: #FFFD8F;
+  --color-lightGreen: #B0CE88;
+  --color-midGreen: #4C763B;
+  --color-darkGreen: #043915;
+}
 
 html, body{
   margin: 0;

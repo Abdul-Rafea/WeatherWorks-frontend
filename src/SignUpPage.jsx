@@ -13,14 +13,36 @@ function SignUpPage(){
     const [userName, setUsername] = useState("");
     const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(null);
 
-    const loading = () => {
-        setisLoading(true);
-    }
     const policyOpen = () =>{
         setPrivacyPolicyOpen(true);
     }
     const policyClose = () =>{
         setPrivacyPolicyOpen(false);
+    }
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+
+        const userData = {
+            email: email,
+            password: password,
+            userName: userName,
+        };
+
+        try{
+            setisLoading(true);
+            const response = await fetch('http://localhost:5000/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+            const data = await response.json();
+            setisLoading(false);
+        }
+        catch(error){
+            console.error('Error during sign up:', error);
+        }
     }
 
     return(
@@ -44,7 +66,7 @@ function SignUpPage(){
                         viewBox="0 0 200 200"
                         data-name="Layer 1"
                         id="Layer_1"
-                        xmlns="http://www.w3.org/2000/svg"
+                       xmlns="http://www.w3.org/2000/svg"
                     >
                         <title />
                         <path d="M100,15a85,85,0,1,0,85,85A84.93,84.93,0,0,0,100,15Zm0,150a65,65,0,1,1,65-65A64.87,64.87,0,0,1,100,165ZM116.5,57.5a9.67,9.67,0,0,0-14,0L74,86a19.92,19.92,0,0,0,0,28.5L102.5,143a9.9,9.9,0,0,0,14-14l-28-29L117,71.5C120.5,68,120.5,61.5,116.5,57.5Z" />
@@ -56,7 +78,7 @@ function SignUpPage(){
                         type="text"
                         placeholder="Create a username"
                         value={userName}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
                         />
                 </div>
                 <div className="w-full flex justify-center items-center flex-wrap gap-1">
@@ -86,7 +108,7 @@ function SignUpPage(){
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                 </div>
-                <button onClick={loading} className="bg-[#D9A22B] text-2xl text-[#ffffff] font-bold rounded-2xl p-2 pl-5 pr-5">SignUp</button>
+                <button onClick={handleSignUp} className="bg-[#D9A22B] text-2xl text-[#ffffff] font-bold rounded-2xl p-2 pl-5 pr-5">SignUp</button>
                 <div className="w-full flex flex-wrap gap-3 mb-4">
                     <div className="w-full flex justify-center items-center bg-[#D9A22B] rounded-xl p-2 pl-4 gap-4">
                         <button className=""></button>

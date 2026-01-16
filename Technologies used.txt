@@ -1,0 +1,18 @@
+Frontend: -
+1. React
+2. vercel (frontend hosting)
+
+Backend: - 
+1. Node:
+	- express (handles routing = less code)
+	- cors (allows requests from other domains and diffrent ports)
+	- axious (fetches data, auto JSON conversion and better error handling)
+	- dotenv (loads env variables and passwords, keeping them safe and private)
+	- bycrypt (hashes passwords/data)
+	- pg (called node-postgres: allows to send raw SQl to supabase)
+	- JWT (generates a web token used for each user making authentication easier)
+
+Database: -
+1. PostgreSQL
+2. supabase (database hosting)
+

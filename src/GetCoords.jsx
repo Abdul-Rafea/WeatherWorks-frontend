@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 function GetCoords({onClose}){
-    const [error, setError] = useState(null);
-
     useEffect(() => {
         if (!navigator.geolocation){
             setError("Geolocation is not supported please type city name")
@@ -14,12 +12,7 @@ function GetCoords({onClose}){
             onClose({latitude, longitude});
         };
 
-        const handleError = (err) => {
-            setError(err.message);
-            onClose({ latitude:null, longitude:null });
-        };
-
-        navigator.geolocation.getCurrentPosition(handleSucess, handleError);
+        navigator.geolocation.getCurrentPosition(handleSucess);
     }, [onClose]);
 
     

@@ -5,33 +5,46 @@ import Portal from "./generatePortal";
 import LoadingFrame from "./loadingFrame";
 import GetCoords from "./GetCoords";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { WeatherContext } from "./WeatherContext";
+
 
 function Dashboard(){
     const [weatherData, setWeatherData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [cityName, setcityName] = useState("");
-    const [Coords , setCoords] = useState({latitude: null, longitude: null});
-    const [location, setLocation] = useState(false);
-    const [getCoords, setGetCoords] = useState(false);
+    const {locationCoords, setLocationCoords} = useContext(WeatherContext);
     const [fetchType, setFetchType] = useState("weather");
- 
-    const openGetCoords = () => setGetCoords(true);
-    const closeGetCoords = (coords) => {
+    const [getCoords, setGetCoords] = useState(false);
+    const [getLocation, setGetLocation] = useState(false);
+
+    const openGetCoords = () => {
+        setGetCoords(true);
+    }
+    const closeGetCoords = (Coords) => {
         setGetCoords(false);
-        setCoords(coords);
-        setLocation(true);
+        setLocationCoords({lat: Coords.latitude, lon: Coords.longitude});
+        setGetLocation(true);
     }
+    
     const changeFetchType = () => {
-        
-    }
+        if (fetchType === "weather"){
+        setFetchType("city-search");
+        }
+        else {
+            setFetchType("weather");
+        }
+    };
+
 
     useEffect(() => {
         const fetchData = async() =>{
+            if (!locationCoords || locationCoords.lat === null || locationCoords.lon === null){
+                return;
+            }
             try{
                 setIsLoading(true);
-                const response = await fetch(`http://localhost:5000/${fetchType}?latitude=${Coords.latitude}&longitude=${Coords.longitude}`);
+                const response = await fetch(`http://localhost:5000/${fetchType}?latitude=${locationCoords.lat}&longitude=${locationCoords.lon}`);
                 const WeatherData = await response.json();
                 setWeatherData(WeatherData);
                 setIsLoading(false);
@@ -41,18 +54,8 @@ function Dashboard(){
                 console.error(error);
             }
         };
-
-        if (Coords.latitude && Coords.longitude){
-            fetchData();
-        }
-    }, [Coords])
-
-    if (weatherData){
-        console.log(weatherData);
-    }
-    if (Coords.latitude && Coords.longitude){
-        console.log(Coords.latitude, Coords.longitude);
-    }
+        fetchData();
+    }, [locationCoords]);
 
     return (
         <>
@@ -64,7 +67,7 @@ function Dashboard(){
             {getCoords &&(
                 <GetCoords onClose={closeGetCoords} />
             )}
-            {!location &&(
+            {!getLocation &&(
                 <Portal styling = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0Fbf] flex justify-center items-center">
                     <div className="w-9/10 bg-[#1C8EA3] rounded-2xl flex justify-center items-center flex-wrap gap-5 p-2">
                         <h2 className="text-2xl text-[#ffffff] text-center">Where are you?</h2>
@@ -93,7 +96,6 @@ function Dashboard(){
                     day = {weatherData.day}
                     icon = {weatherData.icon}
                  />
-
                 <RightFrame 
                     aqi = {weatherData.aqi} 
                     uvIndex = {null} 

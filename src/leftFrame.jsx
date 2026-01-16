@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
-
 import { WeatherContext } from "./WeatherContext";
+
 import Portal from './generatePortal.jsx';
 import PageSetting from './PageSetting.jsx';
 import IconMap from './IconMap.jsx';
@@ -126,7 +126,7 @@ function LeftFrame(props){
                     </div>
                         <div className="relative w-5/7 flex justify-end items-center cursor-pointer">
                         {isSearchOpen && (
-                            <SearchBar styling = "absolute right-0 z-1 w-4/5 bg-[#1C8EA3] rounded-3xl text-2xl text-[#ffffff] font-medium" />
+                            <SearchBar onClose = {searchOpen} styling = "absolute right-0 z-1 w-4/5 bg-[#1C8EA3] rounded-3xl text-2xl text-[#ffffff] font-medium" />
                         )}
                             <button onClick={searchOpen} className="cursor-pointer z-2 pr-2">
                                 <svg
