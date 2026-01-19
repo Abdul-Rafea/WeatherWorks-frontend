@@ -376,7 +376,7 @@ function LandingPage() {
                 </div>
                 <div className="w-9/10 h-1 bg-darkGreen mt-5 mb-5"></div>
                 <div className="w-full flex justify-start items-center gap-5">
-                    <img src="src\assets\Wasabi X logo.png" alt="wasabi X logo" className="w-1/5 sm:w-1/7 xl:w-1/11" />
+                    <img src={WasabiXlogo} alt="wasabi X logo" className="w-1/5 sm:w-1/7 xl:w-1/11" />
                     <div>
                         <h3 className="text-xl sm:text-2xl">&copy;Wasabi X</h3>
                         <h3 className="text-xl sm:text-2xl">All rights reserved.</h3>
