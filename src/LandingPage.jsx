@@ -1,12 +1,9 @@
 import { Link } from 'react-router-dom';
-import { FaGithub } from "react-icons/fa6"
+import { FaGithub } from "react-icons/fa6";
 
-import ShowcaseFrame from './DescriptionBox';
 import DescriptionBox from './DescriptionBox';
-
-import DashboardScreenImg from "./assets/DashboardScreenShot.png"
-import DashboardScreenImg2 from "./assets/DashboardScreenShot2.png"
-import WeatherWorksLogo from "./assets/WeatherWorksLogo.png";
+import WasabiXlogo from './assets/Wasabi X logo.png';
+import SpiralGraphics from './assets/Spiral Graphics.png';
 
 function LandingPage() {
     return (
@@ -14,7 +11,7 @@ function LandingPage() {
             <header className="w-full flex justify-center items-center pt-1 pb-1 sm:pb-2">
                 <nav className="w-full flex justify-between items-center">
                     <div className="w-1/4 grid grid-rows-auto place-items-center xl:w-1/8">
-                        <img src="src\assets\Wasabi X logo.png" alt="Wasabi X logo" className="w-1/2 row-span-1"/>
+                        <img src={WasabiXlogo} alt="Wasabi X logo" className="w-1/2 row-span-1"/>
                         <h2 className="font-iceberg text-base row-span-1 -mt-1
                             sm:text-xl sm:bottom-5">Wasabi X</h2>
                     </div>
@@ -36,7 +33,7 @@ function LandingPage() {
                     <h2 className="w-full text-3xl font-sans font-base sm:text-4xl">Your Social Weather App.</h2>
                     <h3 className="w-full text-xl font-sans font-light text-darkGreen sm:text-2xl">See the waether through everyone's eyes.</h3>
                 </div>
-                <img src="src\assets\Spiral graphics.png" alt="Spiral graphics" className="w-full mt-10 mb-10 sm:w-2/3 xl:w-1/3" />
+                <img src={SpiralGraphics} alt="Spiral graphics" className="w-full mt-10 mb-10 sm:w-2/3 xl:w-1/3" />
                 <div className="flex justify-center items-center flex-col gap-2">
                     <button className="bg-darkGreen text-offWhite rounded-3xl p-1 pl-3 pr-3 text-2xl font-iceberg sm:text-3xl sm:p-2 sm:pl-4 sm:pr-4">Start Browsing on Web</button>
                     <p className="text-3xl text-center font-iceberg sm:text-">OR</p>
