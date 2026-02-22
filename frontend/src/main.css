@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Iceberg&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-iceberg: "Iceberg", cursive;
+
+  --color-offWhite: #FFFD8F;
+  --color-offWhite50: #FFFD8F80;
+  --color-lightGreen: #B0CE88;
+  --color-midGreen: #4C763B;
+  --color-darkGreen: #043915;
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.plus-jakarta-sans {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
