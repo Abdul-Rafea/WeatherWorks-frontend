@@ -1,14 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Iceberg&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Contrail+One&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-iceberg: "Iceberg", cursive;
+  --font-Andika: "Andika", sans-serif;
+  --font-ContrailOne: "Contrail One", system-ui;
 
-  --color-offWhite: #FFFD8F;
+  --color-White: #f0edee;
   --color-offWhite50: #FFFD8F80;
   --color-lightGreen: #B0CE88;
   --color-midGreen: #4C763B;
   --color-darkGreen: #043915;
+  --color-Main1: #212121;
+  --color-Wasabi: #8980f5;
+  --color-Wasabi2: #92dce5;
+  --color-Wasabi3: #f1e3e4;
+
+  --text-shadow-Main: 
+    0 0 5px #8980f5;
+
+  --shadow-Button: 0 3px 5px #ffffff80;
 }
 
 html, body{
@@ -20,8 +30,12 @@ html, body{
   scroll-behavior: smooth;
 }
 
-.plus-jakarta-sans {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+@utility font-ContrailOne{
+  font-family: var(--font-ContrailOne--value);
+  font-weight: 400;
+}
+
+@utility font-Andika{
+  font-family: var(--font-Andika);
+  font-weight: 700;
 }

@@ -1,3 +1,7 @@
+import { useEffect, useContext } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { WeatherContext, WeatherProvider } from "./WeatherContext";
+
 import LandingPage from "./LandingPage";
 import Dashboard from "./Dashboard";
 import LoginPage from "./LoginPage";
@@ -5,10 +9,15 @@ import SignUpPage from "./SignUpPage";
 import SetProfilePic from "./SetProfilePic";
 import UserSettings from "./UserSettings";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { WeatherProvider } from "./WeatherContext";
-
 function App() {
+    const {setIsLoggedIn} = useContext(WeatherContext);
+
+    useEffect(() =>{
+        if (localStorage.getItem("token")){
+            setIsLoggedIn(true);
+        }
+    }, [setIsLoggedIn])
+
     return(
         <WeatherProvider>
             <Router>

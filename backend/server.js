@@ -10,6 +10,7 @@ import path from "path";
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { json } from 'stream/consumers';
+import { get } from 'http';
 
 const app = express();
 const port = process.env.PORT;
@@ -337,7 +338,25 @@ app.post('/update-username', auth, async (req, res) =>{
             message: "Failed to change username",
         });
     }
-})
+});
+
+app.get('/user-count', async (res, req) =>{
+    try{
+        const result = await pool.query(`SELECT COUNT(*) FROM users`);
+        const totalUsers = result.rows[0].count;
+        
+        res.status(200).json({
+            totalUsers: parseInt(totalUsers)
+        });
+    }
+    catch (err){
+        console.error("Failed to fetch user count:", err.message);
+        res.status(500).json({
+            message:"Server Error"
+        });
+    }
+
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`)});

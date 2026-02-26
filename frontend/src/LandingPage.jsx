@@ -1,23 +1,36 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { FaGithub } from "react-icons/fa6";
 import { WeatherContext } from './WeatherContext';
 
+import api from './api';
 import DescriptionBox from './DescriptionBox';
-import WasabiXlogo from './assets/WasabiXKLogo.webp';
-import Background from './assets/MainBackground.webp';
-import SpiralGraphics from './assets/Spiral Graphics.png';
-
-import UserMenu from './UserMenu';
+import WasabiXlogo from './assets/WasabiX_Logo.webp';
 import NotificationFrame from './NotificationFrame';
+import CloudSvg from './CloudSvg';
 
 function LandingPage() {
     const navigate = useNavigate();
     
-    const {isLoggedIn, showNotification} = useContext(WeatherContext);
+    const {isLoggedIn, setIsLoggedIn,
+        showNotification, setShowNotification,
+        setNotificationMsg}= useContext(WeatherContext);
 
     const [ProfMenuOpen, setProfMenuOpen] = useState(false);
-    
+    const [navUnderline, setNavUnderline] = useState("community");
+    const [userCount, setUserCount] = useState(null);
+
+    useEffect(()=>{
+            async()=>{
+            try{
+                const response = await api.get("/user-count");
+                setUserCount(response.data.totalUsers);
+            }
+            catch (err){
+                console.error(err);
+            }
+        }
+    }, [])
     const handleProfileMenu = () =>{
         if (ProfMenuOpen){
             setProfMenuOpen(false);
@@ -26,258 +39,346 @@ function LandingPage() {
             setProfMenuOpen(true);
         }
     }
+    
+    const handleLogOut = () =>{
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        setNotificationMsg("Logged out successfully");
+        setShowNotification(true);
+    }
+
+    const handleNav = (value) =>{
+        if ( value === 0 ){
+            setNavUnderline("features");
+        }
+        else if( value === 1 ){
+            setNavUnderline("community");
+        }
+        else if(value === 2){
+            setNavUnderline("download");
+        }
+        else{
+            setNavUnderline("community");
+        }
+    }
 
     return (
         <>
             {showNotification && <NotificationFrame />}
-            <div className="w-full relative flex flex-col justify-center items-center">
-                <div className="w-full h-full bg-cover bg-center bg-no-repeat bg-fixed"
-                    style={{ backgroundImage: `url(${Background})` }}>
-                    <header className="z-2 w-full flex justify-between items-center pt-1 pb-1 sm:pb-2">
-                        <div className="w-1/4 grid grid-rows-auto place-items-center">
-                            <img src={WasabiXlogo} alt="Wasabi X logo" className="w-1/2 row-span-1"/>
-                            <h2 className="font-iceberg text-base row-span-1 -mt-1
-                                sm:text-xl sm:bottom-5">Wasabi X</h2>
+            <div className="w-full bg-Main1 relative flex flex-col justify-center items-center">
+                <header className="w-full flex justify-between items-center p-2">
+                    <div className="w-2/5 flex  justify-center items-center gap-2">
+                        <img src={WasabiXlogo} alt="Wasabi X logo" className="w-1/3" />
+                        <h2 className="font-ContrailOne text-Wasabi text-2xl text-shadow-Main">WasabiX</h2>
+                    </div>
+                    <div className="w-3/5 flex justify-end">
+                        {isLoggedIn ? (
+                            <div className="relative flex justify-end items-center gap-1">
+                                <Link to="/dashboard" className="text-center text-md text-Main1 font-Andika rounded-3xl p-0.5 pl-3 pr-3 bg-Wasabi ">Dashboard</Link>
+                                <button onClick={handleProfileMenu} className="w-1/5">
+                                    <img src="src\assets\prof pic all plat.png" alt="User Avatar" className="rounded-full border-2 border-Wasabi"></img>
+                                </button>
+                                { ProfMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-1 bg-Wasabi text-Wasabi text-lg text-center text-nowrap font-Andika p-2 rounded-xl">
+                                        <ul className="w-min flex flex-wrap justify-end items-center gap-2">
+                                            <li>
+                                                <Link to="/user-settings" className="bg-Main1 rounded-3xl p-0.5 pl-3 pr-3">User Settings</Link>
+                                            </li>
+                                            <li>
+                                                <button onClick={handleLogOut} className="bg-Main1 rounded-3xl p-0.5 pl-3 pr-3">Logout</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        ) :
+                        (
+                            <div className="shadow-Button rounded-3xl flex items-center justify-center text-center font-Andika font-bold text-md">
+                                <Link to="/signup" className="text-Main1 rounded-3xl rounded-r-none p-0.5 pl-3 pr-3 bg-Wasabi2 ">Signup</Link>
+                                <Link to="/login" className="text-Main1 rounded-3xl rounded-l-none p-0.5 pl-3 pr-3 bg-Wasabi">Login</Link>
+                            </div>
+                        ) }
+                    </div>
+                </header>
+                <nav className="w-9/10 flex justify-center items-center flex-wrap gap-2 -mt-1 text-White text-base font-Andika font-semibold">
+                    <a onClick={() => handleNav(0)} className="w-1/4 flex flex-wrap justify-center items-center">
+                        Features
+                        {navUnderline == "features"? (
+                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                        ):
+                        (
+                            <></>
+                        )}
+                    </a>
+                    <a onClick={() => handleNav(1)} className="w-1/4 flex flex-wrap justify-center items-center">
+                        Community
+                        {navUnderline == "community"? (
+                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                        ):
+                        (
+                            <></>
+                        )}
+                    </a>
+                    <a onClick={() => handleNav(2)} className="w-1/4 flex flex-wrap justify-center items-center">
+                        Download
+                        {navUnderline == "download"? (
+                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                        ):
+                        (
+                            <></>
+                        )}
+                    </a>
+                </nav>
+                <section className="min-h-screen">
+                    <div className="w-full flex justify-center items-center flex-col flex-wrap p-3 mt-3">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                            <h1 className="w-full text-4xl font-ContrailOne text-wrap text-Wasabi">WasabiX: weather Powered by People.</h1>
+                            <h2 className="w-full text-2xl font-Andika font-semibold text-Wasabi2">CONNECT, COMMENT, CLOUD</h2>
+                            <h3 className="w-full text-2xl font-Andika text-White">Join the community today!</h3>
                         </div>
-                        <nav className="w-full flex justify-end items-center gap-4 sm:gap-7 pr-3">
-                                <a className="text-sm font-iceberg sm:text-lg">Features</a>
-                                <a className="text-sm font-iceberg sm:text-lg">Community</a>
-                                <a className="text-sm font-iceberg sm:text-lg">Download</a>                  
-                        </nav>
-                    </header>
-                    <div className="w-full flex justify-center items-center flex-col flex-wrap p-3 pt-2 pb-15 xl:flex-row">
-                        <div className="w-full flex justify-between items-center mb-3">
-                            <Link to="/dashboard" className="text-center text-md text-offWhite font-iceberg rounded-3xl p-1 pl-3 pr-3 bg-midGreen">Dashboard</Link>
-                            {isLoggedIn ? (
-                                <div className="relative w-1/7">
-                                    <button onClick={handleProfileMenu}>
-                                        <img src="src\assets\prof pic all plat.png" alt="profile pic" className="rounded-full"></img>
-                                    </button>
-                                    { ProfMenuOpen && (
-                                        <UserMenu />
-                                    )}
+                        <div className="relative z-1 mt-10 mb-40 flex flex-col items-center">
+                            <div className="z-2 w-80 aspect-video flex justify-center items-center border-10 border-black rounded-lg">
+                                <div className="w-full h-full bg-Main1">&nbsp;</div>
+                            </div>
+                            <div id="background-glow-1" className="z-1 w-70 aspect-video bg-Main1 shadow-[0_0_70px_#92dce5] absolute top-3 left-1/2 transform -translate-x-1/2">&nbsp;</div>
+                            <div className="z-1 w-full relative flex flex-col items-center">
+                                <div id="monitor-arm" className="z-4 w-15 h-15 bg-black overflow-hidden flex justify-center relative">
+                                    <div id="monitor-arm-hole" className="w-9 h-9 rounded-full bg-Main1 absolute -top-4 shadow-[inset_0_13px_20px_#92dce5]">&nbsp;</div>
                                 </div>
-                            ) :
+                                <div id="monitor-base" className="z-4 w-30 h-8 rounded-t-2xl bg-black">&nbsp;</div>
+                                <div id="background-glow-2" className="z-1 absolute -bottom-15 w-70 h-10 shadow-[0_-50px_110px_#92dce5]">&nbsp;</div>
+                                <div id="box-top" className="z-3 absolute -bottom-5 w-70 h-10 bg-Wasabi2 [clip-path:polygon(0%_0%,80%_0%,100%_100%,20%_100%)]">&nbsp;</div>
+                                <div id="box-left" className="z-3 absolute -bottom-15 left-5 h-20 w-15 bg-Wasabi [clip-path:polygon(0%_0%,100%_50%,100%_100%,0%_100%)]"></div>
+                                <div id="box-front" className="z-3 absolute -bottom-15 left-20 h-10 w-55 bg-Wasabi" >&nbsp;</div>
+                            </div>
+                        </div>
+                        <div className="z-2 w-full bg-Main1 -mt-25 pt-7 flex items-center flex-col gap-3">
+                            {isLoggedIn? (
+                                <>    
+                                    <Link to="/dashboard" className="z-1 bg-Wasabi text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Check out Weather Info</Link>
+                                    <p className="text-Wasabi3 text-4xl text-center font-ContrailOne">OR</p>
+                                    <button className="bg-Wasabi2 text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Get it on Android / iOS</button>
+                                </>
+                            ):
                             (
-                                    <Link to="/login" className="text-center text-md text-offWhite font-iceberg rounded-3xl p-1 pl-3 pr-3 bg-midGreen">LogIn</Link>
-                            ) }
+                                <>
+                                    <Link to="/signup" className="shadow-Button bg-Wasabi text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Join the community</Link>
+                                    <p className="text-Wasabi3 text-4xl text-center font-ContrailOne">OR</p>
+                                    <button className="bg-Wasabi2 text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Get it on Android / iOS</button>
+                                </>
+                            )}
+                            
                         </div>
-                        <div className="flex-justify-center items-center flex-col">
-                            <h1 className="w-full text-4xl font-iceberg text-wrap sm:text-5xl xl">CONNECT, COMMENT, CLOUD.</h1>
-                            <h2 className="w-full text-3xl font-sans font-base sm:text-4xl">Your Social Weather App.</h2>
-                            <h3 className="w-full text-xl font-sans font-light text-darkGreen sm:text-2xl">See the waether through everyone's eyes.</h3>
-                        </div>
-                        <img src={SpiralGraphics} alt="Spiral graphics" className="w-full mt-10 mb-10 sm:w-2/3 xl:w-1/3" />
                         <div className="flex justify-center items-center flex-col gap-2">
-                            <Link to="/dashboard" className="bg-darkGreen text-offWhite rounded-3xl p-1 pl-3 pr-3 text-2xl font-iceberg sm:text-3xl sm:p-2 sm:pl-4 sm:pr-4">Start Browsing on Web</Link>
-                            <p className="text-3xl text-center font-iceberg sm:text-">OR</p>
-                            <button className="bg-midGreen text-offWhite rounded-3xl p-1 pl-3 pr-3 text-2xl font-iceberg sm:text-3xl sm:p-2 sm:pl-4 sm:pr-4">Download for Android / iOS</button>
                         </div>
                     </div>
-                </div>
-                <div className="-mt-1 w-full flex justify-center items-center flex-wrap pl-3 pb-2 pr-3 gap-3">
-                    <h1 className="w-full text-2xl font-iceberg sm:text-3xl">What poeple are saying: -</h1>
-                    <DescriptionBox
-                        icon = {<svg
-                            fill="#000000"
-                            width={50}
-                            height={50}
-                            viewBox="0 0 32 32"
-                            id="icon"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <defs>
-                            <style
-                                dangerouslySetInnerHTML={{
-                                __html: "\n      .cls-1 {\n        fill: none;\n      }\n    "
-                                }}
-                            />
-                            </defs>
-                            <path d="M28.2261,22.812a13.9664,13.9664,0,0,0,0-13.624L28.4141,9a2.0021,2.0021,0,0,0,0-2.8281l-2.5857-2.586a2.0028,2.0028,0,0,0-2.8284,0l-.1877.1875a13.9687,13.9687,0,0,0-13.6243,0L9,3.5859a2.0024,2.0024,0,0,0-2.8284,0L3.5859,6.1719A2.0021,2.0021,0,0,0,3.5859,9l.1878.1875a13.97,13.97,0,0,0,0,13.625L3.5859,23a2.0021,2.0021,0,0,0,0,2.8281l2.5857,2.586a2.0021,2.0021,0,0,0,2.8284,0l.188-.188a13.9687,13.9687,0,0,0,13.6243.0005L23,28.4141a2.0021,2.0021,0,0,0,2.8284,0l2.5857-2.586a2.0021,2.0021,0,0,0,0-2.8281ZM28,16a11.973,11.973,0,0,1-1.2546,5.3315l-3.8948-3.895a6.9808,6.9808,0,0,0,0-2.873l3.8948-3.895A11.973,11.973,0,0,1,28,16ZM27,7.5859l-4.9346,4.9346A7.0434,7.0434,0,0,0,19.48,9.9346L24.4143,5ZM16,21a5,5,0,1,1,5-5A5.0057,5.0057,0,0,1,16,21ZM21.3154,5.2705,17.4365,9.1494a6.9808,6.9808,0,0,0-2.873,0L10.6846,5.2705A12.2484,12.2484,0,0,1,21.3154,5.2705ZM7.5859,5l4.9346,4.9346a7.0449,7.0449,0,0,0-2.5859,2.5859L5,7.5859ZM4,16a11.9716,11.9716,0,0,1,1.2546-5.3311l3.8948,3.8946a6.9808,6.9808,0,0,0,0,2.873L5.2546,21.3311A11.9716,11.9716,0,0,1,4,16ZM7.5857,27,5,24.4141,9.9346,19.48a7.0434,7.0434,0,0,0,2.5859,2.5859Zm3.0989-.27,3.8789-3.8789a6.9808,6.9808,0,0,0,2.873,0L21.3154,26.73A12.2484,12.2484,0,0,1,10.6846,26.73Zm13.73.27L19.48,22.0654A7.0449,7.0449,0,0,0,22.0654,19.48L27,24.4141Z" />
-                            <rect
-                            id="_Transparent_Rectangle_"
-                            data-name="<Transparent Rectangle>"
-                            className="cls-1"
-                            width={32}
-                            height={32}
-                            />
-                        </svg>}
-                        color = "grey"
-                        heading = "The Commuter's Lifesaver" 
-                        heading2 = "No more suprise rain!"
-                        description = "I was about to leave for work, but a neighbor's comment on Wasabi X warned me about a sudden downpour two blocks away"
-                    />     
-                    <DescriptionBox
-                        icon = {<svg
-                            width={50}
-                            height={50}
-                            viewBox="-22.02 0 186.194 186.194"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <g
-                            id="Group_3294"
-                            data-name="Group 3294"
-                            transform="translate(-1105.783 -70.864)"
+                </section>
+                <section>
+                    <div className="-mt-1 w-full flex justify-center items-center flex-wrap pl-3 pb-2 pr-3 gap-3">
+                        <h1 className="w-full text-3xl font-ContrailOne text-Wasabi">What poeple are saying: -</h1>
+                        <DescriptionBox
+                            icon = {<svg
+                                fill="#000000"
+                                width={50}
+                                height={50}
+                                viewBox="0 0 32 32"
+                                id="icon"
+                                xmlns="http://www.w3.org/2000/svg"
                             >
-                            <path
-                                id="Path_1749"
-                                data-name="Path 1749"
-                                d="M1164.19,212.059v40.5a2,2,0,0,0,2,2h21.333a2,2,0,0,0,2-2v-40.5"
-                                fill="none"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <path
-                                id="Path_1750"
-                                data-name="Path 1750"
-                                d="M1244.71,209.049l-27.455-20.532a1.671,1.671,0,0,1,1-3.01h12.809a1.672,1.672,0,0,0,1.068-2.958l-24.855-20.638a1.672,1.672,0,0,1,1.068-2.958H1218.5a1.672,1.672,0,0,0,1.157-2.878l-21.67-20.8a1.672,1.672,0,0,1,1.157-2.878h6.888a1.672,1.672,0,0,0,1.281-2.746l-17.666-21.061a1.672,1.672,0,0,1,1.281-2.746h2.754a1.672,1.672,0,0,0,1.448-2.507L1178.307,74.2a1.672,1.672,0,0,0-2.9,0l-16.823,29.139a1.672,1.672,0,0,0,1.448,2.507h2.754a1.672,1.672,0,0,1,1.281,2.746l-17.666,21.061a1.672,1.672,0,0,0,1.281,2.746h6.888a1.672,1.672,0,0,1,1.157,2.878l-21.67,20.8a1.672,1.672,0,0,0,1.157,2.878h10.154a1.672,1.672,0,0,1,1.068,2.958l-24.855,20.638a1.672,1.672,0,0,0,1.068,2.958h12.809a1.671,1.671,0,0,1,1,3.01l-27.455,20.532a1.672,1.672,0,0,0,1,3.01h133.7A1.67,1.67,0,0,0,1244.71,209.049Z"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_110"
-                                data-name="Line 110"
-                                x1="6.37"
-                                y2="7.597"
-                                transform="translate(1165.57 119.124)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_111"
-                                data-name="Line 111"
-                                x1="6.04"
-                                y1="10.458"
-                                transform="translate(1177.52 88.77)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_112"
-                                data-name="Line 112"
-                                x1="14.1"
-                                y1="10.551"
-                                transform="translate(1188.16 191.756)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_113"
-                                data-name="Line 113"
-                                x1="12.22"
-                                y2="10.148"
-                                transform="translate(1156.46 169.189)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_114"
-                                data-name="Line 114"
-                                x1="24.88"
-                                y2="18.604"
-                                transform="translate(1140.57 185.506)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_115"
-                                data-name="Line 115"
-                                x1="9.92"
-                                y1="11.832"
-                                transform="translate(1175.58 113.483)"
-                                fill="#E7E7E7"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_116"
-                                data-name="Line 116"
-                                x1="17.36"
-                                y2="16.653"
-                                transform="translate(1163.9 137.35)"
-                                fill="#ffffff"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_117"
-                                data-name="Line 117"
-                                x1="31.98"
-                                y1="26.553"
-                                transform="translate(1175.58 158.953)"
-                                fill="#ffffff"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_118"
-                                data-name="Line 118"
-                                y1="42.498"
-                                transform="translate(1172.19 212.059)"
-                                fill="none"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_119"
-                                data-name="Line 119"
-                                y1="16.267"
-                                transform="translate(1181.19 238.29)"
-                                fill="none"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            <line
-                                id="Line_120"
-                                data-name="Line 120"
-                                y1="19.957"
-                                transform="translate(1181.19 212.059)"
-                                fill="none"
-                                stroke="#000000"
-                                strokeMiterlimit={10}
-                                strokeWidth={5}
-                            />
-                            </g>
+                                <defs>
+                                <style
+                                    dangerouslySetInnerHTML={{
+                                    __html: "\n      .cls-1 {\n        fill: none;\n      }\n    "
+                                    }}
+                                />
+                                </defs>
+                                <path d="M28.2261,22.812a13.9664,13.9664,0,0,0,0-13.624L28.4141,9a2.0021,2.0021,0,0,0,0-2.8281l-2.5857-2.586a2.0028,2.0028,0,0,0-2.8284,0l-.1877.1875a13.9687,13.9687,0,0,0-13.6243,0L9,3.5859a2.0024,2.0024,0,0,0-2.8284,0L3.5859,6.1719A2.0021,2.0021,0,0,0,3.5859,9l.1878.1875a13.97,13.97,0,0,0,0,13.625L3.5859,23a2.0021,2.0021,0,0,0,0,2.8281l2.5857,2.586a2.0021,2.0021,0,0,0,2.8284,0l.188-.188a13.9687,13.9687,0,0,0,13.6243.0005L23,28.4141a2.0021,2.0021,0,0,0,2.8284,0l2.5857-2.586a2.0021,2.0021,0,0,0,0-2.8281ZM28,16a11.973,11.973,0,0,1-1.2546,5.3315l-3.8948-3.895a6.9808,6.9808,0,0,0,0-2.873l3.8948-3.895A11.973,11.973,0,0,1,28,16ZM27,7.5859l-4.9346,4.9346A7.0434,7.0434,0,0,0,19.48,9.9346L24.4143,5ZM16,21a5,5,0,1,1,5-5A5.0057,5.0057,0,0,1,16,21ZM21.3154,5.2705,17.4365,9.1494a6.9808,6.9808,0,0,0-2.873,0L10.6846,5.2705A12.2484,12.2484,0,0,1,21.3154,5.2705ZM7.5859,5l4.9346,4.9346a7.0449,7.0449,0,0,0-2.5859,2.5859L5,7.5859ZM4,16a11.9716,11.9716,0,0,1,1.2546-5.3311l3.8948,3.8946a6.9808,6.9808,0,0,0,0,2.873L5.2546,21.3311A11.9716,11.9716,0,0,1,4,16ZM7.5857,27,5,24.4141,9.9346,19.48a7.0434,7.0434,0,0,0,2.5859,2.5859Zm3.0989-.27,3.8789-3.8789a6.9808,6.9808,0,0,0,2.873,0L21.3154,26.73A12.2484,12.2484,0,0,1,10.6846,26.73Zm13.73.27L19.48,22.0654A7.0449,7.0449,0,0,0,22.0654,19.48L27,24.4141Z" />
+                                <rect
+                                id="_Transparent_Rectangle_"
+                                data-name="<Transparent Rectangle>"
+                                className="cls-1"
+                                width={32}
+                                height={32}
+                                />
                             </svg>}
-                        color = "grey"
-                        heading = "The Outdoor Enthusiast"
-                        heading2 = "Perfect for hiking plans"
-                        description = "Generic apps said it was sunny, but the local Wasabi community shared photos of a thick fog at the trailhead"
-                    />  
-                    <DescriptionBox
-                        icon = {<svg
-                            width={50}
-                            height={50}
-                            viewBox="0 0 1024 1024"
-                            xmlns="http://www.w3.org/2000/svg"
+                            color = "grey"
+                            heading = "The Commuter's Lifesaver" 
+                            heading2 = "No more suprise rain!"
+                            description = "I was about to leave for work, but a neighbor's comment on Wasabi X warned me about a sudden downpour two blocks away"
+                        />     
+                        <DescriptionBox
+                            icon = {<svg
+                                width={50}
+                                height={50}
+                                viewBox="-22.02 0 186.194 186.194"
+                                xmlns="http://www.w3.org/2000/svg"
                             >
-                            <path d="M640 608h-64V416h64v192zm0 160v160a32 32 0 01-32 32H416a32 32 0 01-32-32V768h64v128h128V768h64zM384 608V416h64v192h-64zm256-352h-64V128H448v128h-64V96a32 32 0 0132-32h192a32 32 0 0132 32v160z" />
-                            <path d="M220.8 256l-71.232 80 71.168 80H768V256H220.8zm-14.4-64H800a32 32 0 0132 32v224a32 32 0 01-32 32H206.4a32 32 0 01-23.936-10.752l-99.584-112a32 32 0 010-42.496l99.584-112A32 32 0 01206.4 192zm678.784 496l-71.104 80H266.816V608h547.2l71.168 80zm-56.768-144H234.88a32 32 0 00-32 32v224a32 32 0 0032 32h593.6a32 32 0 0023.936-10.752l99.584-112a32 32 0 000-42.496l-99.584-112A32 32 0 00828.48 544z" />
-                            </svg>}
-                        color = "grey"
-                        heading = "The Local Guide"
-                        heading2 = "Finally, a weather app that talks back"
-                        description = "I love being able to ask if the local park is too windy for a picnic and getting a reply from someone actually sitting there right now. It's brilliant"
-                    />
-                </div>
+                                <g
+                                id="Group_3294"
+                                data-name="Group 3294"
+                                transform="translate(-1105.783 -70.864)"
+                                >
+                                <path
+                                    id="Path_1749"
+                                    data-name="Path 1749"
+                                    d="M1164.19,212.059v40.5a2,2,0,0,0,2,2h21.333a2,2,0,0,0,2-2v-40.5"
+                                    fill="none"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <path
+                                    id="Path_1750"
+                                    data-name="Path 1750"
+                                    d="M1244.71,209.049l-27.455-20.532a1.671,1.671,0,0,1,1-3.01h12.809a1.672,1.672,0,0,0,1.068-2.958l-24.855-20.638a1.672,1.672,0,0,1,1.068-2.958H1218.5a1.672,1.672,0,0,0,1.157-2.878l-21.67-20.8a1.672,1.672,0,0,1,1.157-2.878h6.888a1.672,1.672,0,0,0,1.281-2.746l-17.666-21.061a1.672,1.672,0,0,1,1.281-2.746h2.754a1.672,1.672,0,0,0,1.448-2.507L1178.307,74.2a1.672,1.672,0,0,0-2.9,0l-16.823,29.139a1.672,1.672,0,0,0,1.448,2.507h2.754a1.672,1.672,0,0,1,1.281,2.746l-17.666,21.061a1.672,1.672,0,0,0,1.281,2.746h6.888a1.672,1.672,0,0,1,1.157,2.878l-21.67,20.8a1.672,1.672,0,0,0,1.157,2.878h10.154a1.672,1.672,0,0,1,1.068,2.958l-24.855,20.638a1.672,1.672,0,0,0,1.068,2.958h12.809a1.671,1.671,0,0,1,1,3.01l-27.455,20.532a1.672,1.672,0,0,0,1,3.01h133.7A1.67,1.67,0,0,0,1244.71,209.049Z"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_110"
+                                    data-name="Line 110"
+                                    x1="6.37"
+                                    y2="7.597"
+                                    transform="translate(1165.57 119.124)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_111"
+                                    data-name="Line 111"
+                                    x1="6.04"
+                                    y1="10.458"
+                                    transform="translate(1177.52 88.77)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_112"
+                                    data-name="Line 112"
+                                    x1="14.1"
+                                    y1="10.551"
+                                    transform="translate(1188.16 191.756)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_113"
+                                    data-name="Line 113"
+                                    x1="12.22"
+                                    y2="10.148"
+                                    transform="translate(1156.46 169.189)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_114"
+                                    data-name="Line 114"
+                                    x1="24.88"
+                                    y2="18.604"
+                                    transform="translate(1140.57 185.506)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_115"
+                                    data-name="Line 115"
+                                    x1="9.92"
+                                    y1="11.832"
+                                    transform="translate(1175.58 113.483)"
+                                    fill="#E7E7E7"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_116"
+                                    data-name="Line 116"
+                                    x1="17.36"
+                                    y2="16.653"
+                                    transform="translate(1163.9 137.35)"
+                                    fill="#ffffff"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_117"
+                                    data-name="Line 117"
+                                    x1="31.98"
+                                    y1="26.553"
+                                    transform="translate(1175.58 158.953)"
+                                    fill="#ffffff"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_118"
+                                    data-name="Line 118"
+                                    y1="42.498"
+                                    transform="translate(1172.19 212.059)"
+                                    fill="none"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_119"
+                                    data-name="Line 119"
+                                    y1="16.267"
+                                    transform="translate(1181.19 238.29)"
+                                    fill="none"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                <line
+                                    id="Line_120"
+                                    data-name="Line 120"
+                                    y1="19.957"
+                                    transform="translate(1181.19 212.059)"
+                                    fill="none"
+                                    stroke="#000000"
+                                    strokeMiterlimit={10}
+                                    strokeWidth={5}
+                                />
+                                </g>
+                                </svg>}
+                            color = "grey"
+                            heading = "The Outdoor Enthusiast"
+                            heading2 = "Perfect for hiking plans"
+                            description = "Generic apps said it was sunny, but the local Wasabi community shared photos of a thick fog at the trailhead"
+                        />  
+                        <DescriptionBox
+                            icon = {<svg
+                                width={50}
+                                height={50}
+                                viewBox="0 0 1024 1024"
+                                xmlns="http://www.w3.org/2000/svg"
+                                >
+                                <path d="M640 608h-64V416h64v192zm0 160v160a32 32 0 01-32 32H416a32 32 0 01-32-32V768h64v128h128V768h64zM384 608V416h64v192h-64zm256-352h-64V128H448v128h-64V96a32 32 0 0132-32h192a32 32 0 0132 32v160z" />
+                                <path d="M220.8 256l-71.232 80 71.168 80H768V256H220.8zm-14.4-64H800a32 32 0 0132 32v224a32 32 0 01-32 32H206.4a32 32 0 01-23.936-10.752l-99.584-112a32 32 0 010-42.496l99.584-112A32 32 0 01206.4 192zm678.784 496l-71.104 80H266.816V608h547.2l71.168 80zm-56.768-144H234.88a32 32 0 00-32 32v224a32 32 0 0032 32h593.6a32 32 0 0023.936-10.752l99.584-112a32 32 0 000-42.496l-99.584-112A32 32 0 00828.48 544z" />
+                                </svg>}
+                            color = "grey"
+                            heading = "The Local Guide"
+                            heading2 = "Finally, a weather app that talks back"
+                            description = "I love being able to ask if the local park is too windy for a picnic and getting a reply from someone actually sitting there right now. It's brilliant"
+                        />
+                    </div>                
+                </section>
+                
                 <div className="-mt-1 w-full h-auto flex justify-center items-center flex-col flex-wrap p-3 gap-3 pt-10 sm:p-5 xl:flex-row">
                     <h1 className="w-full text-2xl text-offWhite font-iceberg sm:text-3xl">Dive Deeper Into Features: -</h1>
                     <DescriptionBox
