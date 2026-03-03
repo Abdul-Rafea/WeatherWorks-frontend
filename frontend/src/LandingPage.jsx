@@ -1,13 +1,30 @@
+//Required imports: -
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { FaGithub } from "react-icons/fa6";
 import { WeatherContext } from './WeatherContext';
 
+//shadcn components: -
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ArrowUpRightIcon } from "lucide-react";
+
+//main components: -
 import api from './api';
 import DescriptionBox from './DescriptionBox';
 import WasabiXlogo from './assets/WasabiX_Logo.webp';
 import NotificationFrame from './NotificationFrame';
 import CloudSvg from './CloudSvg';
+import WasabiX_Logo from "./assets/WasabiX_Logo.png"; 
 
 function LandingPage() {
     const navigate = useNavigate();
@@ -19,7 +36,7 @@ function LandingPage() {
     const [ProfMenuOpen, setProfMenuOpen] = useState(false);
     const [navUnderline, setNavUnderline] = useState("community");
     const [userCount, setUserCount] = useState(null);
-
+    const [menuOpen, setMenuOpen] = useState(false);
     useEffect(()=>{
             async()=>{
             try{
@@ -65,17 +82,95 @@ function LandingPage() {
     return (
         <>
             {showNotification && <NotificationFrame />}
-            <div className="w-full bg-Main1 relative flex flex-col justify-center items-center">
-                <header className="w-full flex justify-between items-center p-2">
+            <div className="w-full relative flex flex-col justify-center items-center bg-[url(./assets/WasabiX_Background.webp)] bg-cover bg-left bg-fixed">
+                <header className="z-50 fixed top-0 w-full flex justify-between items-center p-2 backdrop-blur-md bg-black/70 border-b-2 border-white">
                     <div className="w-2/5 flex  justify-center items-center gap-2">
-                        <img src={WasabiXlogo} alt="Wasabi X logo" className="w-1/3" />
-                        <h2 className="font-ContrailOne text-Wasabi text-2xl text-shadow-Main">WasabiX</h2>
+                        <img src={WasabiX_Logo} alt="Wasabi X logo" className="w-1/4 rounded-lg" />
+                        <h2 className="font-Andka text-Wasabi font-bold text-2xl">WasabiX</h2>
                     </div>
-                    <div className="w-3/5 flex justify-end">
+                    <nav className="w-9/10 justify-center items-center flex-wrap gap-2 -mt-1 text-White text-base font-Andika font-semibold hidden sm:flex ">
+                        <a onClick={() => handleNav(0)} className="w-1/4 flex flex-wrap justify-center items-center">
+                            Features
+                            {navUnderline == "features"? (
+                                <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                            ):
+                            (
+                                <></>
+                            )}
+                        </a>
+                        <a onClick={() => handleNav(1)} className="w-1/4 flex flex-wrap justify-center items-center">
+                            Community
+                            {navUnderline == "community"? (
+                                <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                            ):
+                            (
+                                <></>
+                            )}
+                        </a>
+                        <a onClick={() => handleNav(2)} className="w-1/4 flex flex-wrap justify-center items-center">
+                            Download
+                            {navUnderline == "download"? (
+                                <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
+                            ):
+                            (
+                                <></>
+                            )}
+                        </a>
+                    </nav>
+                    <div className="w-3/5 flex justify-end gap-2">
+                        <DropdownMenu onOpenChange={setMenuOpen} >
+                            <DropdownMenuTrigger>
+                                <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 sm:hidden">
+                                    { menuOpen? (
+                                        <svg
+                                            width={50}
+                                            height={50}
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                                <path
+                                                    d="M6.995 7.006a1 1 0 000 1.415l3.585 3.585-3.585 3.585a1 1 0 101.414 1.414l3.585-3.585 3.585 3.585a1 1 0 001.415-1.414l-3.586-3.585 3.586-3.585a1 1 0 00-1.415-1.415l-3.585 3.585L8.41 7.006a1 1 0 00-1.414 0z"
+                                                    fill="#0F0F0F"
+                                                />
+                                        </svg>
+                                    ):
+                                    (
+                                        <svg
+                                            width={50}
+                                            height={50}
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M4 6h16M4 12h16M4 18h16"
+                                                stroke="#000"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    )
+                                    }
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="bg-black/70 backdrop-blur-md text-white">
+                                <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                                <DropdownMenuItem>Features</DropdownMenuItem>
+                                <DropdownMenuItem>Community</DropdownMenuItem>
+                                <DropdownMenuItem>How it Works</DropdownMenuItem>
+                                <DropdownMenuItem className="bg-Wasabi hover:bg-Wasabi2 text-black">
+                                    <Button to="/login" asChild size="sm" variant="ghost" className="hover:bg-Wasabi2 font-semibold">
+                                        <Link className="w-full">Log In</Link>
+                                    </Button>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         {isLoggedIn ? (
                             <div className="relative flex justify-end items-center gap-1">
                                 <Link to="/dashboard" className="text-center text-md text-Main1 font-Andika rounded-3xl p-0.5 pl-3 pr-3 bg-Wasabi ">Dashboard</Link>
-                                <button onClick={handleProfileMenu} className="w-1/5">
+                                <button     onClick={handleProfileMenu} className="w-1/5">
                                     <img src="src\assets\prof pic all plat.png" alt="User Avatar" className="rounded-full border-2 border-Wasabi"></img>
                                 </button>
                                 { ProfMenuOpen && (
@@ -93,88 +188,39 @@ function LandingPage() {
                             </div>
                         ) :
                         (
-                            <div className="shadow-Button rounded-3xl flex items-center justify-center text-center font-Andika font-bold text-md">
-                                <Link to="/signup" className="text-Main1 rounded-3xl rounded-r-none p-0.5 pl-3 pr-3 bg-Wasabi2 ">Signup</Link>
-                                <Link to="/login" className="text-Main1 rounded-3xl rounded-l-none p-0.5 pl-3 pr-3 bg-Wasabi">Login</Link>
+                            <div className="flex items-center justify-center gap-2">
+                                <Button asChild size="sm" variant="ghost" className="hover:bg-Wasabi2 font-semibold hidden">
+                                    <Link >Log In</Link>
+                                </Button>
+                                <Button asChild size="sm" className="bg-Wasabi text-black hover:bg-Wasabi2 font-semibold">
+                                    <Link to="/signup" >Sign Up</Link>
+                                </Button>
                             </div>
                         ) }
                     </div>
+                    
                 </header>
-                <nav className="w-9/10 flex justify-center items-center flex-wrap gap-2 -mt-1 text-White text-base font-Andika font-semibold">
-                    <a onClick={() => handleNav(0)} className="w-1/4 flex flex-wrap justify-center items-center">
-                        Features
-                        {navUnderline == "features"? (
-                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
-                        ):
-                        (
-                            <></>
-                        )}
-                    </a>
-                    <a onClick={() => handleNav(1)} className="w-1/4 flex flex-wrap justify-center items-center">
-                        Community
-                        {navUnderline == "community"? (
-                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
-                        ):
-                        (
-                            <></>
-                        )}
-                    </a>
-                    <a onClick={() => handleNav(2)} className="w-1/4 flex flex-wrap justify-center items-center">
-                        Download
-                        {navUnderline == "download"? (
-                            <div className="w-full h-0.5 bg-Wasabi2 rounded-full">&nbsp;</div>
-                        ):
-                        (
-                            <></>
-                        )}
-                    </a>
-                </nav>
-                <section className="min-h-screen">
-                    <div className="w-full flex justify-center items-center flex-col flex-wrap p-3 mt-3">
-                        <div className="flex justify-center items-center flex-col gap-1">
-                            <h1 className="w-full text-4xl font-ContrailOne text-wrap text-Wasabi">WasabiX: weather Powered by People.</h1>
-                            <h2 className="w-full text-2xl font-Andika font-semibold text-Wasabi2">CONNECT, COMMENT, CLOUD</h2>
-                            <h3 className="w-full text-2xl font-Andika text-White">Join the community today!</h3>
+                <section className="mt-30 flex justify-center items-center">
+                    <div className="relative w-9/10 flex justify-center items-center flex-col p-3 backdrop-blur-xs shadow-sm shadow-black rounded-xl">
+                        <CloudSvg id={1} width={200} class="z-0 absolute -top-10 -left-7" />
+                        <CloudSvg id={3} width={200} class="z-0 absolute -top-10" />
+                        <CloudSvg id={2} width={200} class="z-0 absolute -top-10 -right-7" />
+                        <div className="z-1 flex justify-center items-center flex-col gap-1 text-center">
+                            <div className="w-full text-xl font-Andika font-bold test-black">CONNECT, COMMENT, CLOUD</div>
+                            <h1 className="w-full text-4xl font-Andka font-bold text-wrap text-Wasabi ">Weather Powered by People.</h1>
+                            <h3 className="w-full text-2xl font-Andika text-White">Track real-time weather, share your sky, and connect with a community that cares about the forecast as much as you do.</h3>
                         </div>
-                        <div className="relative z-1 mt-10 mb-40 flex flex-col items-center">
-                            <div className="z-2 w-80 aspect-video flex justify-center items-center border-10 border-black rounded-lg">
-                                <div className="w-full h-full bg-Main1">&nbsp;</div>
-                            </div>
-                            <div id="background-glow-1" className="z-1 w-70 aspect-video bg-Main1 shadow-[0_0_70px_#92dce5] absolute top-3 left-1/2 transform -translate-x-1/2">&nbsp;</div>
-                            <div className="z-1 w-full relative flex flex-col items-center">
-                                <div id="monitor-arm" className="z-4 w-15 h-15 bg-black overflow-hidden flex justify-center relative">
-                                    <div id="monitor-arm-hole" className="w-9 h-9 rounded-full bg-Main1 absolute -top-4 shadow-[inset_0_13px_20px_#92dce5]">&nbsp;</div>
-                                </div>
-                                <div id="monitor-base" className="z-4 w-30 h-8 rounded-t-2xl bg-black">&nbsp;</div>
-                                <div id="background-glow-2" className="z-1 absolute -bottom-15 w-70 h-10 shadow-[0_-50px_110px_#92dce5]">&nbsp;</div>
-                                <div id="box-top" className="z-3 absolute -bottom-5 w-70 h-10 bg-Wasabi2 [clip-path:polygon(0%_0%,80%_0%,100%_100%,20%_100%)]">&nbsp;</div>
-                                <div id="box-left" className="z-3 absolute -bottom-15 left-5 h-20 w-15 bg-Wasabi [clip-path:polygon(0%_0%,100%_50%,100%_100%,0%_100%)]"></div>
-                                <div id="box-front" className="z-3 absolute -bottom-15 left-20 h-10 w-55 bg-Wasabi" >&nbsp;</div>
-                            </div>
-                        </div>
-                        <div className="z-2 w-full bg-Main1 -mt-25 pt-7 flex items-center flex-col gap-3">
-                            {isLoggedIn? (
-                                <>    
-                                    <Link to="/dashboard" className="z-1 bg-Wasabi text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Check out Weather Info</Link>
-                                    <p className="text-Wasabi3 text-4xl text-center font-ContrailOne">OR</p>
-                                    <button className="bg-Wasabi2 text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Get it on Android / iOS</button>
-                                </>
-                            ):
-                            (
-                                <>
-                                    <Link to="/signup" className="shadow-Button bg-Wasabi text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Join the community</Link>
-                                    <p className="text-Wasabi3 text-4xl text-center font-ContrailOne">OR</p>
-                                    <button className="bg-Wasabi2 text-Main1 rounded-3xl p-2 pl-3 pr-3 text-2xl font-Andika">Get it on Android / iOS</button>
-                                </>
-                            )}
-                            
-                        </div>
-                        <div className="flex justify-center items-center flex-col gap-2">
+                        <div className="mt-5 w-full flex justify-center items-center flex-col gap-3">
+                            <Button className="bg-Wasabi hover:bg-Wasabi2 text-black font-bold" >
+                                <Link to="signup">Get Started</Link>
+                                <ArrowUpRightIcon />
+                                </Button>
+                            <Button className="bg-white hover:bg-Wasabi2 text-black font-bold">See Features</Button>
                         </div>
                     </div>
                 </section>
                 <section>
-                    <div className="-mt-1 w-full flex justify-center items-center flex-wrap pl-3 pb-2 pr-3 gap-3">
+                    <div className="w-full flex justify-center items-center flex-wrap pl-3 pb-2 pr-3 gap-3">
                         <h1 className="w-full text-3xl font-ContrailOne text-Wasabi">What poeple are saying: -</h1>
                         <DescriptionBox
                             icon = {<svg

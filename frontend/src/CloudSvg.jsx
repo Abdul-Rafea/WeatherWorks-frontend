@@ -1,8 +1,8 @@
-const getCloudVar = (id, width)=>{
+const getCloudVar = (id, width, style) =>{
     const height = width / 2;
     const clouVar = {
         1: (
-            <svg id='cloud-1'
+            <svg id='cloud-1' className={style}
                 width={width}
                 height={height}
                 viewBox='195 20 300 100'
@@ -18,7 +18,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         2:(
-            <svg id="cloud-2"
+            <svg id="cloud-2" className={style}
                 width={width}
                 height={height}
                 viewBox='302 138 120 120'
@@ -34,7 +34,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         3: (
-            <svg id='cloud-3'
+            <svg id='cloud-3' className={style}
                 width={width}
                 height={height}
                 viewBox='177 133 55 55'
@@ -50,7 +50,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         4:(
-            <svg id='cloud-4'
+            <svg id='cloud-4' className={style}
                 width={width}
                 height={height}
                 viewBox='47 265 52 52'
@@ -66,7 +66,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         5:(
-            <svg id='cloud-5'
+            <svg id='cloud-5' className={style}
                 width={width}
                 height={height}
                 viewBox='35 339 57 57'
@@ -82,7 +82,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         6:(
-            <svg id='cloud-6'
+            <svg id='cloud-6' className={style}
                 width={width}
                 height={height}
                 viewBox='50 34 105 105'
@@ -98,7 +98,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         7:(
-            <svg id='cloud-7'
+            <svg id='cloud-7' className={style}
                 width={width}
                 height={height}
                 viewBox='98 373 106 106'
@@ -114,7 +114,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         8:(
-            <svg id='cloud-8'
+            <svg id='cloud-8' className={style}
                 width={width}
                 height={height}
                 viewBox='201 225 185 185'
@@ -130,7 +130,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         9:(
-            <svg id='cloud-9'
+            <svg id='cloud-9' className={style}
                 width={width}
                 height={height}
                 viewBox='322 364 110 110'
@@ -146,7 +146,7 @@ const getCloudVar = (id, width)=>{
             </svg>
         ),
         10:(
-            <svg id='cloud-10'
+            <svg id='cloud-10' className={style}
                 width={width}
                 height={height}
                 viewBox='70 155 105 105'
@@ -167,7 +167,7 @@ const getCloudVar = (id, width)=>{
 
 function CloudSvg(props){
     return(
-        getCloudVar(props.id, props.width)
+        getCloudVar(props.id, props.width, props.class)
     );
 }
 

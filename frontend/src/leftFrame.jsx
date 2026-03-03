@@ -7,7 +7,6 @@ import PageSetting from './PageSetting.jsx';
 import GetCoords from './GetCoords.jsx';
 import SearchBar from './searchBar.jsx';
 
-import WeatherWorksLogo from "./assets/WeatherWorksLogo.png";
 import Search_Icon from "./assets/Search_Icon.png";
 
 function LeftFrame(props){
