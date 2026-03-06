@@ -9,15 +9,28 @@
   --font-Andika: "Andika", sans-serif;
   --font-ContrailOne: "Contrail One", system-ui;
 
-  --color-White: #f0edee;
-  --color-offWhite50: #FFFD8F80;
-  --color-lightGreen: #B0CE88;
-  --color-midGreen: #4C763B;
-  --color-darkGreen: #043915;
-  --color-Main1: #212121;
+  --color-offWhite: #E7E7E7;
   --color-Wasabi: #35DB4C;
   --color-Wasabi2: #1FB233;
-  --color-Wasabi3: #f1e3e4;
+  --color-Wasabi3: #4DE061;
+  --color-Wasabi4: #74E784;
+}
+@layer components{
+  .section-title{
+    @apply w-min text-xl text-center text-nowrap font-Andika text-black/80 bg-Wasabi4 rounded-lg p-2 pl-3 pr-3;
+  }
+  .section-heading{
+    @apply w-full text-4xl text-center font-Andika text-wrap text-Wasabi;
+  }
+  .section-text{
+    @apply w-full text-xl text-center font-Andika text-offWhite;
+  }
+  .section-style{
+    @apply mt-20 w-full h-screen flex justify-center items-center;
+  }
+  .section-basic-blur{
+    @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 backdrop-blur-sm rounded-xl shadow-md shadow-black;
+  }
 }
 .text-outline{
   -webkit-text-stroke: 1px black;
@@ -39,7 +52,7 @@ html, body{
 
 @utility font-Andika{
   font-family: var(--font-Andika);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 @theme inline {
