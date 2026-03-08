@@ -26,10 +26,10 @@
     @apply w-full text-xl text-center font-Andika text-offWhite;
   }
   .section-style{
-    @apply mt-20 w-full h-screen flex justify-center items-center;
+    @apply w-full flex justify-center items-center;
   }
   .section-basic-blur{
-    @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 backdrop-blur-sm rounded-xl shadow-md shadow-black;
+    @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 pb-5 pt-5 backdrop-blur-sm rounded-xl shadow-md shadow-black;
   }
 }
 .text-outline{
