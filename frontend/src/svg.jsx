@@ -1,9 +1,9 @@
 function Svg(props){
     const classMap = {
-        headerIcon: "size-7 sm:size-9",
-        descriptionIcon1: "size-10 sm:size-13",
-        descriptionIcon2: "size-5",
-        descriptionIcon3: "size-11"
+        headerIcon: "size-7 sm:size-9 lg:size-7",
+        descriptionIcon1: "size-10 sm:size-13 lg:size-10",
+        descriptionIcon2: "size-5 sm:size-7",
+        descriptionIcon3: "size-11 lg:size-9"
     }
     const sizeMap = classMap[props.size || "headerIcon"];
 

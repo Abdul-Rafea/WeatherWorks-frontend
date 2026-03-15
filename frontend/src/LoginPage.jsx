@@ -3,8 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from './api';
 import { WeatherContext } from './WeatherContext';
 
+// shadcn/lucide components: -
+import { CornerUpLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+
+// main components: -
 import LoadingFrame from './loadingFrame';
 import NotificationFrame from './NotificationFrame';
+import WasabiX_Logo from "./assets/WasabiX_Logo.png";
 
 function LoginPage(){
     const navigate = useNavigate();
@@ -16,9 +30,6 @@ function LoginPage(){
         setUserName,
     } = useContext(WeatherContext);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
     const [useEmail, setUseEmail] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -32,9 +43,7 @@ function LoginPage(){
     }
         
     const userData ={
-        email: email,
-        password: password,
-        username: username,
+        
         useEmail: useEmail,
     }
 
@@ -72,65 +81,61 @@ function LoginPage(){
         <>
             {showNotification && <NotificationFrame />}
             {isLoading && <LoadingFrame />}
-            
-            <div className="w-full min-h-screen bg-lightGreen p-5 flex justify-start items-center flex-col pb-5">
-                <Link to="/" className="mb-10 flex self-start">
-                        <svg className="fill-darkGreen hover:scale-120 transition ease-in-out "
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={50}
-                            height={50}
-                            viewBox="0 0 1200 1200"
-                            xmlSpace="preserve"
-                            >
-                            <path d="M808.969 133.929v257.06H942.94v267.899H417.981V508.763L0 787.417l417.982 278.654V915.946H1200V133.928H808.969v.001z" />
-                        </svg>
-                </Link>
-                <div className="w-full flex justify-center items-center flex-col gap-10">
-                    <h1 className="text-4xl text-darkGreen font-iceberg">Welcome Back!</h1>
-                    <div className="w-full flex justify-center items-center flex-wrap gap-1">
-                        {useEmail ? (
-                            <>
-                                <label className="w-full text-2xl text-midGreen font-semibold font-iceberg">Email</label>
-                                <input className="w-full text-2xl text-offWhite plus-jakarta-sans font-medium rounded-xl p-2 outline-none placeholder:text-[#ffffff80]"
-                                    type="email"
-                                    placeholder="enter your email here"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                        </>
-                        ) : (
-                            <>
-                                <label className="w-full text-2xl text-midGreen font-semibold font-iceberg">Username</label>
-                                <input className="w-full text-2xl text-offWhite plus-jakarta-sans font-medium rounded-xl p-2 outline-none placeholder:text-[#ffffff80]"
-                                    type="text"
-                                    placeholder="enter your username here"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
-                            </>
-                        )}
-                        
-                        <div className="w-full h-1 bg-midGreen"></div>
+            <div className="authBack">
+                <div className="w-9/10 mt-5 mb-5">
+                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">
+                        <Link to="/">
+                            <CornerUpLeft className="size-7"/>
+                            Return
+                        </Link>    
+                    </Button>
+                </div>
+                <div className="authMain">
+                    <img src={WasabiX_Logo} alt="WasaiX Avatar" className="w-1/4 rounded-md " />
+                    <div className="authHeader">
+                        <h2 className="authTagline">Welcome Back!</h2>
+                        <h1 className="authHeading">Please Log In to continue</h1>
                     </div>
-                    <div className="w-full flex justify-center items-center flex-wrap gap-1">
-                        <label className="w-full text-2xl text-midGreen font-semibold font-iceberg">Password</label>
-                        <input className="w-full text-2xl text-offWhite plus-jakarta-sans font-medium rounded-xl p-2 outline-none placeholder:text-[#ffffff80]"
-                            type="password"
-                            placeholder="Enter your password here"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <div className="w-full h-1 bg-midGreen"></div>
+                    <FieldSet className="w-full">
+                        <FieldGroup>
+                            {useEmail ? (
+                                <Field>
+                                    <FieldLabel htmlFor="email" className="text-lg text-offWhite font-Andika font-bold">Email</FieldLabel>
+                                    <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                        id="email" 
+                                        type="email" 
+                                        placeholder="Enter your email" 
+                                    />
+                                </Field>
+                            ):
+                            (
+                                <Field>
+                                    <FieldLabel htmlFor="username" className="text-lg text-offWhite font-Andika font-bold">Username</FieldLabel>
+                                    <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                        id="username" 
+                                        type="text" 
+                                        placeholder="Enter your username" 
+                                    />
+                                </Field>
+                            )}
+                            <Field>
+                                <FieldLabel htmlFor="password" className="text-lg text-offWhite font-Andika font-bold">Password</FieldLabel>
+                                <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                    id="password" 
+                                    type="password" 
+                                    placeholder="Enter your password"
+                                />
+                            </Field>
+                        </FieldGroup>
+                    </FieldSet>
+                    <div className="w-full flex flex-col items-center gap-2">
+                        <Button onClick={handleLogin} size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Log In</Button>
+                        <button onClick={changeType}  className="text-xl text-black/80 font-Andika">
+                            {useEmail ? ("Or log in with username")
+                            : ("Or log in with email")}
+                        </button>
                     </div>
-                    <button onClick={handleLogin} className="bg-darkGreen text-2xl text-offWhite font-bold rounded-2xl p-2 pl-5 pr-5">Login</button>
-                    <button onClick={changeType} className="text-2xl text-darkGreen font-bold underline">
-                        {useEmail ? ("Login with username instead")
-                        : ("Login with email instead")}
-                    </button>
-                    <Link to="/signUp" className="w-full">
-                            <p className="w-full text-2xl text-center text-midGreen font-iceberg">Dont have an account yet?</p>
-                            <p className="w-full text-2xl text-center text-darkGreen font-bold">SignUp</p>
-                    </Link>
+                    <Link to="/signUp" className="text-xl text-black/80 font-Andika underline">Create an Account</Link>
                 </div>
             </div>
         </>

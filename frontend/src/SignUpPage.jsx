@@ -3,6 +3,21 @@ import { useState, useContext } from 'react';
 import { WeatherContext } from './WeatherContext';
 import api from './api';
 
+// shadcn/lucide components: -
+import { CornerUpLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+
+// main components: -
+import NotificationFrame from './NotificationFrame';
+import WasabiX_Logo from "./assets/WasabiX_Logo.png";
 import LoadingFrame from './loadingFrame';
 import Portal from "./generatePortal";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -90,6 +105,24 @@ function SignUpPage(){
                     <PrivacyPolicy onClose = {handlePolicy} />
                 </Portal>
             )}
+            <div className="authBack">
+                <div className="w-9/10 mt-5 mb-5">
+                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">
+                        <Link to="/">
+                            <CornerUpLeft className="size-7"/>
+                            Return
+                        </Link>    
+                    </Button>
+                </div>
+                <div className="authMain">
+                    <img src={WasabiX_Logo} alt="WasaiX Avatar" className="w-1/4 rounded-md " />
+                    <div className="authHeader">
+                        <h2 className="authTagline">WasabiX</h2>
+                        <h1 className="authHeading">Join the community today</h1>
+                    </div>
+                    
+                </div>
+            </div>
             <div className="w-full bg-lightGreen p-5 flex justify-center items-center flex-col pb-5 gap-5">
                 <Link to="/" className="mb-5 flex self-start">
                     <svg className="fill-darkGreen hover:scale-120 transition ease-in-out"

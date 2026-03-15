@@ -18,23 +18,43 @@
 @layer components{
   .section-title{
     @apply w-min text-xl text-center text-nowrap font-Andika text-black/80 bg-Wasabi4 rounded-lg p-2 pl-3 pr-3
-      sm:text-2xl;
+      sm:text-2xl lg:text-xl;
   }
   .section-heading{
     @apply w-full text-3xl text-center font-Andika text-wrap text-Wasabi
-      sm:text-4xl;
+      sm:text-4xl lg:text-3xl;
   }
   .section-text{
     @apply w-full text-xl text-center font-Andika text-offWhite
-      sm:text-2xl;
+      sm:text-2xl lg:text-xl;
   }
   .section-style{
-    @apply w-full flex justify-center items-center;
+    @apply w-full min-h-screen flex justify-center items-center
+      sm:min-h-0 sm:mt-10 sm:mb-10;
   }
   .section-basic-blur{
-    @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 pb-5 pt-5 backdrop-blur-sm rounded-xl shadow-md shadow-black;
+    @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 pb-15 pt-15 backdrop-blur-sm rounded-xl shadow-md shadow-black;
+  }
+  .authBack{
+    @apply w-full min-h-screen flex flex-col justify-start items-center flex-wrap bg-[url(./assets/WasabiX_Background.webp)] bg-cover bg-left bg-fixed bg-no-repeat;
+  }
+  .authMain{
+    @apply w-9/10 h-min p-5 flex justify-start items-center flex-col gap-5 backdrop-blur-sm rounded-xl shadow-md shadow-black;
+  }
+  .authHeader{
+    @apply w-full flex flex-col items-center mb-5;
+  }
+  .authTagline{
+    @apply text-xl text-offWhite font-Andika
+  }
+  .authHeading{
+    @apply text-2xl text-Wasabi font-Andika
+  }
+  .authFields{
+    @apply w-full flex justify-center items-center flex-wrap gap-1;
   }
 }
+
 .text-outline{
   -webkit-text-stroke: 1px black;
 }
