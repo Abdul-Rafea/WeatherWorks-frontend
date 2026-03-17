@@ -104,7 +104,8 @@ function LoginPage(){
                                     <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
                                         id="email" 
                                         type="email" 
-                                        placeholder="Enter your email" 
+                                        placeholder="Enter your email"
+                                        autoComplete="off" 
                                     />
                                 </Field>
                             ):
@@ -114,14 +115,15 @@ function LoginPage(){
                                     <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
                                         id="username" 
                                         type="text" 
-                                        placeholder="Enter your username" 
+                                        placeholder="Enter your username"
+                                        autoComplete="off" 
                                     />
                                 </Field>
                             )}
                             <Field>
                                 <FieldLabel htmlFor="password" className="text-lg text-offWhite font-Andika font-bold">Password</FieldLabel>
                                 <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
-                                    id="password" 
+                                    id="password"
                                     type="password" 
                                     placeholder="Enter your password"
                                 />
