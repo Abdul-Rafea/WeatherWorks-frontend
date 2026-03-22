@@ -56,8 +56,14 @@
   .authInput{
     @apply text-lg! font-Andika! text-white! placeholder:text-Wasabi4!
   }
+  .authInputError{
+    @apply border-red-500 focus-visible:ring-red-500;
+  }
   .authLabel{
     @apply text-lg! text-offWhite! font-Andika! font-bold!
+  }
+  .authLabelError{
+    @apply text-lg! text-red-500! font-Andika! font-bold!;
   }
 }
 

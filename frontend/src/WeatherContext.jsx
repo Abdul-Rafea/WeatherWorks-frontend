@@ -10,8 +10,8 @@ export function WeatherProvider({children}){
     const [isConfirmPage, setIsConfirmPage] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
-    const [notificationMsg, setNotificationMsg] = useState("");
-    const [isError, setIsError] = useState(false);
+    const [notificationMsg, setNotificationMsg] = useState("Error");
+    const [notificationError, setNotificationError] = useState(false);
     const [globalAvatar, setGlobalAvatar] = useState(DefautAvatar);
     const [userName, setUserName] = useState(() =>{
         const savedUsername = localStorage.getItem("username");
@@ -37,7 +37,7 @@ export function WeatherProvider({children}){
             isLoggedIn, setIsLoggedIn,
             showNotification, setShowNotification,
             notificationMsg, setNotificationMsg,
-            isError, setIsError,
+            notificationError, setNotificationError,
             globalAvatar, setGlobalAvatar,
             userName, setUserName,
 

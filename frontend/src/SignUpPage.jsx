@@ -1,10 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react';
+import { useState, useContext, use } from 'react';
 import { WeatherContext } from './WeatherContext';
 import api from './api';
 
-// shadcn/lucide components: -
-import { CornerUpLeft } from "lucide-react";
+//shadcn components: -
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -16,6 +15,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 
+//lucide components: -
+import { CornerUpLeft } from "lucide-react";
+
+//motion componnets: -
+import { AnimatePresence } from "motion/react";
+
 // main components: -
 import NotificationFrame from './NotificationFrame';
 import WasabiX_Logo from "./assets/WasabiX_Logo.png";
@@ -26,15 +31,26 @@ import PrivacyPolicy from "./PrivacyPolicy";
 function SignUpPage(){
     const navigate = useNavigate();
 
-    const {setIsLoggedIn} = useContext(WeatherContext);
+    const {
+        setIsLoggedIn,
+        showNotification, setShowNotification,
+        notificationMsg, setNotificationMsg,
+        setNotificationError,
+    } = useContext(WeatherContext);
 
     const [isLoading, setisLoading] = useState(null);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
     const [userName, setUsername] = useState("");
+    const [usernameError, setUsernameError] = useState(false);
+    const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState(false);
+    const [password, setPassword] = useState("");
+    const [passwordError, setpasswordError] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [terms, setTerms] = useState(false);
-    const [termsError, setTermsError] = useState(true);
+    const [termsError, setTermsError] = useState(false);
+    
+    let fieldMissing = false;
 
     const handleTerms = () =>{
         if(terms == true ){
@@ -45,7 +61,64 @@ function SignUpPage(){
             setTermsError(false);
         }
     }
-    const handleFetch = async () => {
+
+    const fieldError = () =>{
+        setShowNotification(true);
+        setNotificationMsg("Please fill all the required feilds");
+        setNotificationError(true);
+    }
+    const handlSignUp = async () => {
+        if(userName == ""){
+            setUsernameError(true);
+            fieldError();
+            fieldMissing = true;
+        }
+
+        if(email == ""){
+            setEmailError(true);
+            fieldError();
+            fieldMissing = true;
+        }
+
+        if(password == ""){
+            setpasswordError(true);
+            fieldError();
+            fieldMissing = true;
+        }
+
+        if(confirmPassword == ""){
+            setConfirmPasswordError(true);
+            fieldError();
+            fieldMissing = true;
+        }
+        
+        if(password != confirmPassword){
+            setConfirmPasswordError(true);
+            setShowNotification(true);
+            setNotificationMsg("Passwords do not match")
+            setNotificationError(true);
+            fieldMissing = true;
+        }
+
+        if(terms == false){
+            setTermsError(true);
+            setShowNotification(true);
+            setNotificationMsg("You must accept the terms and conditions");
+            setNotificationError(true);
+            fieldMissing = true;
+        }
+
+        if(fieldMissing == true){
+            return;
+        }
+        else{
+            setUsernameError(false);
+            setEmailError(false);
+            setpasswordError(false);
+            setConfirmPasswordError(false);
+            setTermsError(false);
+        }
+        
         const userData = {
             email: email,
             password: password,
@@ -70,7 +143,10 @@ function SignUpPage(){
         }
     }
     return(
-        <>                                                                                                                      
+        <>           
+            <AnimatePresence>
+                {showNotification && <NotificationFrame />}    
+            </AnimatePresence>                                                                                                           
             {isLoading && (
                 <LoadingFrame />
             )}
@@ -92,58 +168,94 @@ function SignUpPage(){
                     <FieldSet className="w-full">
                         <FieldGroup>
                             <Field>
-                                <FieldLabel htmlFor="username" className="authLabel">Username</FieldLabel>
-                                <Input className="authInput" 
+                                <FieldLabel 
+                                    className={`${usernameError ? "authLabelError" : "authLabel"}`}
+                                    htmlFor="username"
+                                >
+                                    Username
+                                </FieldLabel>
+                                <Input 
+                                    className="authInput" 
+                                    aria-invalid={usernameError}
                                     id="username" 
                                     type="text" 
+                                    value={userName}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     placeholder="Enter username"
                                     autoComplete="off"
                                 />
                             </Field>
                             <Field>
-                                <FieldLabel htmlFor="email" className="authLabel">Email</FieldLabel>
-                                <Input className="authInput"
+                                <FieldLabel
+                                    className={`${emailError? "authLabelError" : "authLabel"}`} 
+                                    htmlFor="email" 
+                                >
+                                    Email
+                                </FieldLabel>
+                                <Input 
+                                    className="authInput"
+                                    aria-invalid={emailError}
                                     id="email" 
-                                    type="text" 
+                                    type="text"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email" 
                                     autoComplete="off"
                                 />
                             </Field>
                             <Field>
-                                <FieldLabel htmlFor="password" className="authLabel">Password</FieldLabel>
-                                <Input className="authInput"
+                                <FieldLabel
+                                    className={`${passwordError? "authLabelError" : "authLabel"}`} 
+                                    htmlFor="password"
+                                >
+                                    Password
+                                </FieldLabel>
+                                <Input 
+                                    className="authInput"
+                                    aria-invalid={passwordError}
                                     id="passowrd" 
                                     type="password" 
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter password" 
                                 />
                             </Field>
                             <Field>
-                                <FieldLabel htmlFor="confirmPassword" className="authLabel">Confirm Password</FieldLabel>
-                                <Input className="authInput"
+                                <FieldLabel
+                                    className={`${confirmPasswordError? "authLabelError" : "authLabel"}`} 
+                                    htmlFor="confirmPassword"
+                                >
+                                    Confirm Password
+                                </FieldLabel>
+                                <Input 
+                                    className="authInput"
+                                    aria-invalid={emailError}
                                     id="confirmPassword"
                                     type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="Re-enter passowrd" 
                                 />
                             </Field>
-                            { termsError ? (
-                                <Field orientation="horizontal" data-invalid>
-                                    <Checkbox className="size-5" 
-                                        aria-invalid 
-                                        id="terms" 
-                                        name="terms" 
-                                    />
-                                    <FieldLabel htmlFor="terms" className="text-lg text-red-500 font-Andika font-bold">Accept terms and conditions</FieldLabel>
-                                </Field>    
-                            ):
-                            (
-                                <Field orientation="horizontal">
-                                    <Checkbox id="terms" name="terms" className="size-5"/>
-                                    <FieldLabel htmlFor="terms" className="authLabel">Accept terms and conditions</FieldLabel>
-                                </Field>
-                            )}
+                            <Field orientation="horizontal" data-invalid>
+                                <Checkbox className="size-5" 
+                                    aria-invalid = {termsError}
+                                    id="terms" 
+                                    name="terms" 
+                                    checked={terms}
+                                    onCheckedChange={(checked) => setTerms(checked)}
+                                />
+                                <FieldLabel htmlFor="terms" 
+                                    className={` ${termsError ? "text-lg text-red-500 font-Andika font-bold" : "authLabel"}`}>
+                                    Accept terms and conditions
+                                </FieldLabel>
+                            </Field>
                         </FieldGroup>
                     </FieldSet>
-                    <Button size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Sign Up</Button>
+                    <Button 
+                        size="sm"
+                        onClick={handlSignUp} 
+                        className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Sign Up</Button>
                     <Link to="/login" className="text-xl text-black/80 font-Andika underline">Already have an account?</Link>
                 </div>
             </div>
