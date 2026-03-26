@@ -36,7 +36,7 @@
     @apply w-9/10 h-min flex flex-col justify-center items-center gap-5 p-3 pb-15 pt-15 backdrop-blur-sm rounded-xl shadow-md shadow-black;
   }
   .authBack{
-    @apply w-full min-h-screen flex flex-col justify-start items-center flex-wrap bg-[url(./assets/WasabiX_Background.webp)] bg-cover bg-left bg-fixed bg-no-repeat;
+    @apply w-full min-h-screen flex flex-col justify-start items-center flex-wrap ;
   }
   .authMain{
     @apply w-9/10 h-min p-5 flex justify-start items-center flex-col gap-5 backdrop-blur-sm rounded-xl shadow-md shadow-black mb-10;

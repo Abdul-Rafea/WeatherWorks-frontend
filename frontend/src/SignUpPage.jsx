@@ -11,22 +11,19 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSet,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 //lucide components: -
 import { CornerUpLeft } from "lucide-react";
 
-//motion componnets: -
-import { AnimatePresence } from "motion/react";
-
 // main components: -
 import NotificationFrame from './NotificationFrame';
 import WasabiX_Logo from "./assets/WasabiX_Logo.png";
-import LoadingFrame from './loadingFrame';
 import Portal from "./generatePortal";
 import PrivacyPolicy from "./PrivacyPolicy";
+import DefaultPic from "./assets/Default_Profile_Pic.jpg";
 
 function SignUpPage(){
     const navigate = useNavigate();
@@ -36,9 +33,10 @@ function SignUpPage(){
         showNotification, setShowNotification,
         notificationMsg, setNotificationMsg,
         setNotificationError,
+        setIsLoading,
+        setGlobalAvatar,
     } = useContext(WeatherContext);
 
-    const [isLoading, setisLoading] = useState(null);
     const [userName, setUsername] = useState("");
     const [usernameError, setUsernameError] = useState(false);
     const [email, setEmail] = useState("");
@@ -50,6 +48,10 @@ function SignUpPage(){
     const [terms, setTerms] = useState(false);
     const [termsError, setTermsError] = useState(false);
     
+    const [uploadAvatar, setUplaodAvatar] = useState(false);
+    const [avatar, setAvatar] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(DefaultPic);
+
     let fieldMissing = false;
 
     const handleTerms = () =>{
@@ -62,53 +64,49 @@ function SignUpPage(){
         }
     }
 
-    const fieldError = () =>{
-        setShowNotification(true);
-        setNotificationMsg("Please fill all the required feilds");
-        setNotificationError(true);
-    }
-    const handlSignUp = async () => {
+    const handleSignUp = async () => {
         if(userName == ""){
             setUsernameError(true);
-            fieldError();
             fieldMissing = true;
         }
 
         if(email == ""){
             setEmailError(true);
-            fieldError();
             fieldMissing = true;
         }
 
         if(password == ""){
             setpasswordError(true);
-            fieldError();
             fieldMissing = true;
         }
 
         if(confirmPassword == ""){
             setConfirmPasswordError(true);
-            fieldError();
             fieldMissing = true;
         }
         
-        if(password != confirmPassword){
-            setConfirmPasswordError(true);
-            setShowNotification(true);
-            setNotificationMsg("Passwords do not match")
-            setNotificationError(true);
-            fieldMissing = true;
-        }
-
         if(terms == false){
             setTermsError(true);
-            setShowNotification(true);
-            setNotificationMsg("You must accept the terms and conditions");
-            setNotificationError(true);
             fieldMissing = true;
         }
 
         if(fieldMissing == true){
+            setShowNotification(true);
+            setNotificationMsg("Please fill all the required feilds");
+            setNotificationError(true);
+            return;
+        }
+        else if(password != confirmPassword){
+            setConfirmPasswordError(true);
+            setShowNotification(true);
+            setNotificationMsg("Passwords do not match")
+            setNotificationError(true);
+            return;
+        }
+        else if(terms == false){
+            setShowNotification(true);
+            setNotificationMsg("You must accept the terms and conditions");
+            setNotificationError(true);
             return;
         }
         else{
@@ -122,34 +120,114 @@ function SignUpPage(){
         const userData = {
             email: email,
             password: password,
-            userName: userName,
+            username: userName,
             terms: terms,
         };
         
         try{
-            setisLoading(true);
+            setIsLoading(true);
 
             const response = await api.post("/signup", userData);
             const data = response.data;
             localStorage.setItem('token', data.token);
-                
-            navigate("/update-avatar");
+            
+            setShowNotification(true);
+            setNotificationMsg(data.message)
+            setNotificationError(false);
+
+            setUplaodAvatar(true);
         }
-        catch(error){
-            console.error('Error during sign up:', error);
+    catch(error){
+            setShowNotification(true);
+            setNotificationError(true);
+            if(error.response && error.response.data){
+                setNotificationMsg(error.response.data.message);
+            }
+            else{
+                setNotificationMsg("Server Error");
+            }
+
+            console.error(error);
         }
         finally{
-            setisLoading(false);
+            setIsLoading(false);
         }
     }
+
+    const handleUpload = (e) =>{
+        const file = e.target.files[0];
+        if (file){
+            setAvatar(file);
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    }
+
+    const handleChangeAvatar = async () =>{
+        if(avatar == null){
+            setUplaodAvatar(false);
+            navigate("/");
+        }
+
+        const formData = new FormData();
+        formData.append("avatar", avatar);
+
+        try{
+            setIsLoading(true);
+            const response = await api.post("/change-avatar", formData);
+            const result = response.data;
+            
+            if (result && result.avatar){
+                setGlobalAvatar(result.avatar);
+            }
+
+            setShowNotification(true);
+            setNotificationMsg(result.message);
+            setNotificationError(false);
+            setUplaodAvatar(false);
+            navigate("/");
+        }
+        catch (err){
+            console.error("Failed to change avatar: ", err);
+            
+            if(err.response && err.response.data){
+                setShowNotification(true);
+                setNotificationMsg(err.response.message);
+                setNotificationError(true);
+            }
+
+            setAvatar(DefaultPic);
+            setAvatarPreview(DefaultPic);
+        }
+        finally{
+            setIsLoading(false);
+        }
+    }
+
     return(
-        <>           
-            <AnimatePresence>
-                {showNotification && <NotificationFrame />}    
-            </AnimatePresence>                                                                                                           
-            {isLoading && (
-                <LoadingFrame />
-            )}
+        <>                                   
+            {uploadAvatar && (
+                <Portal>
+                    <div className="w-8/10 bg-Wasabi rounded-xl p-5 flex justify-center items-center flex-col gap-5">
+                        <h1 className="text-2xl text-black/80 font-Andika">Upload an Avatar!</h1>
+                        <img src={avatarPreview} alt="Avatar" className="w-4/5 rounded-full"></img>
+                        <input
+                            type="file"
+                            id = "avatar-upload"
+                            className="hidden"
+                            accept=".png, .jpg, .jpeg"
+                            onChange={handleUpload}
+                        />
+                        <div className="flex justify-center items-center flex-col gap-2">
+                            <Button size="sm" className="bg-offWhite text-black text-base">
+                                <label htmlFor="avatar-upload">Upload Avatar</label>
+                            </Button>
+                            <Button size="sm" onClick={handleChangeAvatar} className="bg-black font-Andika text-offWhite text-base">
+                                Confirm
+                            </Button>
+                        </div>
+                    </div>
+                </Portal>
+            )}       
             <div className="authBack">
                 <div className="w-9/10 mt-5 mb-5">
                     <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">
@@ -229,7 +307,7 @@ function SignUpPage(){
                                 </FieldLabel>
                                 <Input 
                                     className="authInput"
-                                    aria-invalid={emailError}
+                                    aria-invalid={confirmPasswordError}
                                     id="confirmPassword"
                                     type="password"
                                     value={confirmPassword}
@@ -254,7 +332,7 @@ function SignUpPage(){
                     </FieldSet>
                     <Button 
                         size="sm"
-                        onClick={handlSignUp} 
+                        onClick={handleSignUp} 
                         className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Sign Up</Button>
                     <Link to="/login" className="text-xl text-black/80 font-Andika underline">Already have an account?</Link>
                 </div>

@@ -5,6 +5,7 @@ export const WeatherContext = createContext();
 
 export function WeatherProvider({children}){
 
+    const [isLoading, setIsLoading] = useState(false);
     const [locationCoords, setLocationCoords] = useState({lat: null, lon: null});
     const [weatherData, setWeatherData] = useState(null);
     const [isConfirmPage, setIsConfirmPage] = useState(false);
@@ -31,6 +32,7 @@ export function WeatherProvider({children}){
     }, [userName])
     return(
         <WeatherContext.Provider value={{
+            isLoading, setIsLoading,
             locationCoords, setLocationCoords, 
             weatherData, setWeatherData,
             isConfirmPage, setIsConfirmPage,

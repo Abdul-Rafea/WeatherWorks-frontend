@@ -45,9 +45,12 @@ function LandingPage() {
         isTablet = false;
     }
 
-    const {isLoggedIn, setIsLoggedIn,
+    const {
+        isLoggedIn, setIsLoggedIn,
         showNotification, setShowNotification,
-        setNotificationMsg}= useContext(WeatherContext);
+        setNotificationMsg,
+        globalAvatar,
+    }= useContext(WeatherContext);
 
     const [ProfMenuOpen, setProfMenuOpen] = useState(false);
     const [navUnderline, setNavUnderline] = useState("community");
@@ -108,31 +111,37 @@ function LandingPage() {
                         <h2 className="font-Andka text-Wasabi4 font-bold text-2xl 
                             md:text-3xl lg:text-2xl">WasabiX</h2>
                     </div>
-                    <div className="w-1/2 flex justify-end gap-2">
+                    <div className="w-1/2 flex items-center justify-end gap-2">
+                        {isLoggedIn && (
+                            <Button size="sm" className="bg-Wasabi4 text-black/80 font-Andika text-base">Dashbaord</Button>
+                        )}
                         <DropdownMenu onOpenChange={setMenuOpen}>
                             <DropdownMenuTrigger asChild>
-                                <button className="bg-Wasabi4 hover:bg-Wasabi rounded-md p-1">
-                                    { menuOpen? (
-                                        <>
-                                            <Svg
-                                                id = {8}
-                                                svgColor = "fillBlack"
-                                                size = "headerIcon"
-                                            /> 
-                                        </>
-                                ):
-                                    (
-                                        <>
-                                            <Svg
-                                                id = {9}
-                                                svgColor = "Black"
-                                                size = "headerIcon"
-                                            />
-
-                                        </>
-                                    )
-                                    }
-                                </button>
+                                    {isLoggedIn ? (
+                                        <button>
+                                            <img src={globalAvatar} alt="User Avatar" className="w-10 rounded-full border-2 border-Wasabi4"></img>
+                                        </button>
+                                    ) :
+                                    ( 
+                                        <button className="bg-Wasabi4 hover:bg-Wasabi rounded-md p-1">
+                                            {
+                                                menuOpen? (
+                                                    <Svg
+                                                        id = {8}
+                                                        svgColor = "fillBlack"
+                                                        size = "headerIcon"
+                                                    />
+                                                ):
+                                                (
+                                                    <Svg
+                                                        id = {9}
+                                                        svgColor = "Black"
+                                                        size = "headerIcon"
+                                                    />
+                                                )
+                                            }
+                                        </button>
+                                    )}
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="size-50 h-full bg-black/70 backdrop-blur-md text-white">
                                 <DropdownMenuLabel className="sm:text-xl">Menu</DropdownMenuLabel>
@@ -143,48 +152,38 @@ function LandingPage() {
                                 <DropdownMenuItem className="data-highlighted:bg-Wasabi"><a href="#working" className="w-full sm:text-xl">How it Works</a></DropdownMenuItem>
                                 <DropdownMenuItem className="data-highlighted:bg-Wasabi"><a href="#download" className="w-full sm:text-xl">For Android/iOS</a></DropdownMenuItem>
                                 <Separator />
-                                <DropdownMenuItem className="data-highlighted:bg-black/0">
-                                    <Button asChild size="sm" className="bg-Wasabi4 text-black hover:bg-Wasabi font-Andika
-                                        sm:text-lg">
-                                        <Link to="/login">Log In</Link>
-                                    </Button>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="data-highlighted:bg-black/0">
-                                    <Button asChild size="sm" className="bg-Wasabi4 text-black hover:bg-Wasabi font-Andika
-                                        sm:text-lg">
-                                        <Link to="/signup">Sign Up</Link>
-                                    </Button>
-                                </DropdownMenuItem>
+                                {isLoggedIn? (
+                                    <>
+                                    <DropdownMenuItem>
+                                        <Button></Button>
+                                    </DropdownMenuItem>
+                                    </>
+                                ):
+                                (
+                                    <>
+                                        <DropdownMenuItem className="data-highlighted:bg-black/0">
+                                            <Button asChild size="sm" className="bg-Wasabi4 text-black hover:bg-Wasabi font-Andika
+                                                sm:text-lg">
+                                                <Link to="/login">Log In</Link>
+                                            </Button>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className="data-highlighted:bg-black/0">
+                                            <Button asChild size="sm" className="bg-Wasabi4 text-black hover:bg-Wasabi font-Andika
+                                                sm:text-lg">
+                                                <Link to="/signup">Sign Up</Link>
+                                            </Button>
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        {isLoggedIn ? (
-                            <div className="relative flex justify-end items-center gap-1">
-                                <Link to="/dashboard" className="text-center text-md text-Main1 font-Andika rounded-3xl p-0.5 pl-3 pr-3 bg-Wasabi ">Dashboard</Link>
-                                <button     onClick={handleProfileMenu} className="w-1/5">
-                                    <img src="src\assets\prof pic all plat.png" alt="User Avatar" className="rounded-full border-2 border-Wasabi"></img>
-                                </button>
-                                { ProfMenuOpen && (
-                                    <div className="absolute right-0 top-full mt-1 bg-Wasabi text-Wasabi text-lg text-center text-nowrap font-Andika p-2 rounded-xl">
-                                        <ul className="w-min flex flex-wrap justify-end items-center gap-2">
-                                            <li>
-                                                <Link to="/user-settings" className="bg-Main1 rounded-3xl p-0.5 pl-3 pr-3">User Settings</Link>
-                                            </li>
-                                            <li>
-                                                <button onClick={handleLogOut} className="bg-Main1 rounded-3xl p-0.5 pl-3 pr-3">Logout</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        ) :
-                        (
+                        {!isLoggedIn && (
                             <div className="flex items-center justify-center gap-2">
                                 <Button asChild size="sm" variant="ghost" className="hover:bg-Wasabi font-Andika font-bold hidden">
                                     <Link >Log In</Link>
                                 </Button>
-                                
                             </div>
-                        ) }
+                        )}
                     </div>
                 </header>
                 <section id="home" className="section-style

@@ -3,17 +3,23 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from './api';
 import { WeatherContext } from './WeatherContext';
 
-// shadcn/lucide components: -
-import { CornerUpLeft } from "lucide-react";
+//shadcn components: -
 import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+
+//lucide components: -
+import { CornerUpLeft } from "lucide-react";
+
+//motion componnets: -
+import { AnimatePresence } from "motion/react";
 
 // main components: -
 import LoadingFrame from './loadingFrame';
@@ -23,15 +29,24 @@ import WasabiX_Logo from "./assets/WasabiX_Logo.png";
 function LoginPage(){
     const navigate = useNavigate();
 
-    const {setIsLoggedIn,
+    const {
+        setIsLoggedIn,
         setNotificationMsg,
         showNotification, setShowNotification,
-        setIsError,
+        notificationError,setNotificationError,
         setUserName,
     } = useContext(WeatherContext);
 
+    const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState(false);
+    const [username, setUsername] = useState("");
+    const [usernameError, setUsernameError] = useState(false);
+    const [password, setPassword] = useState("");
+    const [passwordError, setPasswordError] = useState(false);
     const [useEmail, setUseEmail] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+
+    let fieldError = false; 
 
     const changeType = () =>{
         if (useEmail){
@@ -41,13 +56,39 @@ function LoginPage(){
             setUseEmail(true);
         }
     }
-        
-    const userData ={
-        
-        useEmail: useEmail,
-    }
 
     const handleLogin = async () =>{
+        if(useEmail == true){
+            if(email == ""){
+                setEmailError(true);
+                fieldError = true;
+            }
+        }
+        
+        if(useEmail == false){
+            if(username == ""){
+                setUsernameError(true);
+                fieldError = true;
+            }
+        }
+        
+        if(password == ""){
+            setPasswordError(true);
+            fieldError = true
+        }
+
+        if(fieldError == true){
+            setShowNotification(true);
+            setNotificationMsg("Please fill are the required fields");
+            setNotificationError(true);
+            return;
+        }
+        else{
+            setEmailError(false);
+            setUsernameError(false);
+            setPasswordError(false);
+        }
+
         try{
             setIsLoading(true);
 
@@ -79,7 +120,9 @@ function LoginPage(){
 
     return(
         <>
-            {showNotification && <NotificationFrame />}
+            <AnimatePresence>
+                {showNotification && <NotificationFrame />}
+            </AnimatePresence>
             {isLoading && <LoadingFrame />}
             <div className="authBack">
                 <div className="w-9/10 mt-5 mb-5">
@@ -100,10 +143,19 @@ function LoginPage(){
                         <FieldGroup>
                             {useEmail ? (
                                 <Field>
-                                    <FieldLabel htmlFor="email" className="text-lg text-offWhite font-Andika font-bold">Email</FieldLabel>
-                                    <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                    <FieldLabel
+                                        htmlFor="email" 
+                                        className={`${emailError ? "authLabelError" : "authLabel"}`}
+                                    >
+                                        Email
+                                    </FieldLabel>
+                                    <Input 
+                                        className="authInput"
+                                        aria-invalid={emailError}
                                         id="email" 
                                         type="email" 
+                                        value={email}
+                                        onChange={(e) =>{setEmail(e.target.value)}}
                                         placeholder="Enter your email"
                                         autoComplete="off" 
                                     />
@@ -111,20 +163,38 @@ function LoginPage(){
                             ):
                             (
                                 <Field>
-                                    <FieldLabel htmlFor="username" className="text-lg text-offWhite font-Andika font-bold">Username</FieldLabel>
-                                    <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                    <FieldLabel 
+                                        htmlFor="username" 
+                                        className={`${usernameError? "authLabelError" : "authLabel"}`}
+                                    >
+                                        Username
+                                    </FieldLabel>
+                                    <Input 
+                                        className="authInput"
+                                        aria-invalid={usernameError}
                                         id="username" 
-                                        type="text" 
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) =>{setUsername(e.target.value)}} 
                                         placeholder="Enter your username"
                                         autoComplete="off" 
                                     />
                                 </Field>
                             )}
                             <Field>
-                                <FieldLabel htmlFor="password" className="text-lg text-offWhite font-Andika font-bold">Password</FieldLabel>
-                                <Input className="text-lg font-Andika text-white placeholder:text-Wasabi4"
+                                <FieldLabel 
+                                    htmlFor="password" 
+                                    className={`${passwordError? "authLabelError" : "authLabel"}`}
+                                >
+                                    Password
+                                </FieldLabel>
+                                <Input 
+                                    className="authInput"
+                                    aria-invalid={passwordError}
                                     id="password"
-                                    type="password" 
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) =>{setPassword(e.target.value)}} 
                                     placeholder="Enter your password"
                                 />
                             </Field>

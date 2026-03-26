@@ -7,7 +7,6 @@ import pool from './db.js';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from "path";
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { json } from 'stream/consumers';
 import { get } from 'http';
@@ -17,16 +16,6 @@ const port = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
-
-// S3 Client setup: -
-const s3 = new S3Client({
-    endpoint: `https://${process.env.B2_ENDPOINT}`,
-    region: process.env.B2_REGION,
-    credentials: {
-        accessKeyId: process.env.B2_KEY_ID,
-        secretAccessKey: process.env.B2_APPLICATION_KEY,
-    },
-});
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -44,7 +33,7 @@ const upload = multer({
     }
 });
 
-//reuseable JWT token verifier: -
+//JWT token verifier: -
 const auth = (req, res, next) =>{
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -158,17 +147,17 @@ app.get('/city-search', async (req, res) => {
 });
 
 app.post('/signup', async (req, res) => {
-    const {email, password, userName, privacyPolicy, updates} = req.body;
+    const {email, password, username, terms} = req.body;
     const sqlQuery = `
-            INSERT INTO users (email, password_hash, username, accepted_privacy, news_updates)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, email, created_at, username, profile_pic_path;
+            INSERT INTO users (email, password, username, terms)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, email, created_at, username;
         `;
     try{
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const values = [email, hashedPassword, userName, privacyPolicy, updates];
+        const values = [email, hashedPassword, username, terms];
 
         const result = await pool.query(sqlQuery, values);
         const userData = result.rows[0];
@@ -176,21 +165,30 @@ app.post('/signup', async (req, res) => {
         //Creating a JWT token here: -
         const payload = {
             userId: userData.id,
-            userName: userName,
+            username: username,
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "24h"});
-        console.log(token);
 
-        console.log("User registred sucessfully");
         res.status(201).json({
             token: token,
             userId: userData.id,
+            message: "User sucessfully registred",
         });
     }
     catch (err){
-        console.error("User registration failed", err);
+        let errorMessage = "";
+
+        console.error(err);
+
+        if(err.code == '23505'){
+            errorMessage = "Email or username already exists";
+        }
+        else{
+            errorMessage = "Unable to register User";
+        }
+
         res.status(500).json({
-            error: "Database connection failed"
+            message: errorMessage,
         });
     }
 });
@@ -255,40 +253,37 @@ app.post('/login', async (req, res) => {
 
 app.post('/change-avatar', auth, upload.single('avatar'), async (req, res) =>{
     try{
-        const file = req.file;
+        const avatar = req.file;
         const userId = req.user.userId;
 
-        if(!req.file){
-            await pool.query(`
-                SELECT profile_pic_path FROM users WHERE id = $1
-                RETURNING profile_pic_path;`
-                ,["default_profile_pic", userId]);
-            return res.status(201).json({
-                message: "Avatar sucessfully changed",
-                code: "default_profile_pic",
-            })
+        const result = await pool.query(`
+            UPDATE users
+            SET avatar_path = $1 WHERE id = $2
+            RETURNING avatar_path;
+        `, [avatar, userId]);
+
+        const user = result.rows[0];
+        
+        if(!user){
+            res.status(404).jsom({
+                message: "User not found",
+            });
         }
 
-        const extension = path.extname(file.originalname).toLowerCase();
-        const fileName = `avatars/${userId}-${Date.now()}${extension}`;
-        
-        await s3.send(new PutObjectCommand({
-            Bucket: process.env.B2_BUCKET_NAME,
-            Key: fileName, 
-            Body: file.buffer,
-            ContentType: file.mimetype,
-        }));
-
-        await pool.query(sqlQuery, [fileName, userId]);
-
-        console.log("Avatar sucessfully changed");
-        res.status(201),json({
+        let imageBase64 = null;
+        if(user.avatar_path){
+            imageBase64 = `data:image/png;base64, ${user.avatar_path.toString('base64')}`;
+        }
+        res.status(200).json({
             message: "Avatar sucessfully changed",
+            avatar: imageBase64,
         });
     }
     catch (err){
         console.error(err);
-        res.status(500);
+        res.status(500).json({
+            message: "Failed to change avatar",
+        });
     }
 });
 

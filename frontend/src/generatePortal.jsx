@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-function SettingPortal({ children, styling }) {
+function SettingPortal({ children }, props) {
         const portalRef = useRef(null);
         const [isMounted, setIsMounted] = useState(false);
 
@@ -11,7 +11,7 @@ function SettingPortal({ children, styling }) {
         }
 
         const settingContainer = portalRef.current;
-        settingContainer.className = "fixed top-0 left-0 z-50 w-screen h-screen bg-[#0F0F0Fbf] flex justify-center items-center";
+        settingContainer.className ="fixed top-0 left-0 z-50 w-screen h-screen bg-black/50 flex justify-center items-center";
 
         document.body.appendChild(settingContainer);
         setIsMounted(true); 
