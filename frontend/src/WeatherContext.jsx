@@ -9,27 +9,31 @@ export function WeatherProvider({children}){
     const [locationCoords, setLocationCoords] = useState({lat: null, lon: null});
     const [weatherData, setWeatherData] = useState(null);
     const [isConfirmPage, setIsConfirmPage] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() =>{
+        return !!localStorage.getItem('token');
+    });
     const [showNotification, setShowNotification] = useState(false);
     const [notificationMsg, setNotificationMsg] = useState("Error");
     const [notificationError, setNotificationError] = useState(false);
-    const [globalAvatar, setGlobalAvatar] = useState(DefautAvatar);
-    const [userName, setUserName] = useState(() =>{
-        const savedUsername = localStorage.getItem("username");
-        return savedUsername;
+    const [globalAvatar, setGlobalAvatar] = useState(() =>{
+        return localStorage.getItem("avatar") || DefautAvatar;
+    });
+    const [globalUserName, setGlobalUserName] = useState(() =>{
+        return localStorage.getItem("username") || "";
     });
 
     useEffect(() =>{
-        localStorage.setItem("username", userName);
-    }, [userName])
+        if(globalUserName){
+            localStorage.setItem("username", globalUserName);
+        }
+    }, [globalUserName]);
 
     useEffect(() =>{
-        const token = localStorage.getItem('token');
-        
-        if (token){
-            setIsLoggedIn(true);
+        if(globalAvatar && globalAvatar != DefautAvatar){
+            localStorage.setItem('avatar', globalAvatar);
         }
-    }, [userName])
+    }, [globalAvatar])
+
     return(
         <WeatherContext.Provider value={{
             isLoading, setIsLoading,
@@ -41,7 +45,7 @@ export function WeatherProvider({children}){
             notificationMsg, setNotificationMsg,
             notificationError, setNotificationError,
             globalAvatar, setGlobalAvatar,
-            userName, setUserName,
+            globalUserName, setGlobalUserName,
 
             }}>
             {children}

@@ -18,12 +18,7 @@ import { Input } from "@/components/ui/input"
 //lucide components: -
 import { CornerUpLeft } from "lucide-react";
 
-//motion componnets: -
-import { AnimatePresence } from "motion/react";
-
 // main components: -
-import LoadingFrame from './loadingFrame';
-import NotificationFrame from './NotificationFrame';
 import WasabiX_Logo from "./assets/WasabiX_Logo.png";
 
 function LoginPage(){
@@ -34,7 +29,8 @@ function LoginPage(){
         setNotificationMsg,
         showNotification, setShowNotification,
         notificationError,setNotificationError,
-        setUserName,
+        setGlobalUserName,
+        setGlobalAvatar,
     } = useContext(WeatherContext);
 
     const [email, setEmail] = useState("");
@@ -89,44 +85,52 @@ function LoginPage(){
             setPasswordError(false);
         }
 
+        const userData = {
+            email: email,
+            username:username,
+            password: password,
+            useEmail: useEmail,
+        }
+
         try{
             setIsLoading(true);
 
             const response = await api.post("/login", userData);
             const result = response.data;
-            localStorage.setItem("token", result.token);
 
-            setIsError(false);
-            setUserName(result.username);
+            localStorage.setItem("token", result.token);
+            setGlobalAvatar(result.avatar);
+            setGlobalUserName(result.username);
+            setIsLoggedIn(true);
+
+            setShowNotification(true);
             setNotificationMsg(result.message);
+            setNotificationError(false);
+
             navigate("/");
         }
         catch(err){
             console.error(err);
-            setIsError(true);
+            
+            setShowNotification(true);
             if (err.response && err.response.data){
                 setNotificationMsg(err.response.data.message );
             }
             else{
                 setNotificationMsg("Could not connect to server");
             }
+            setNotificationError(true);
         }
         finally{
             setIsLoading(false);
-            setShowNotification(true);
-            setIsLoggedIn(true);
         }
     }
 
     return(
         <>
-            <AnimatePresence>
-                {showNotification && <NotificationFrame />}
-            </AnimatePresence>
-            {isLoading && <LoadingFrame />}
             <div className="authBack">
                 <div className="w-9/10 mt-5 mb-5">
-                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">
+                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black rounded-lg">
                         <Link to="/">
                             <CornerUpLeft className="size-7"/>
                             Return

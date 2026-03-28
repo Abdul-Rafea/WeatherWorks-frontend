@@ -157,9 +157,7 @@ app.post('/signup', async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const values = [email, hashedPassword, username, terms];
-
-        const result = await pool.query(sqlQuery, values);
+        const result = await pool.query(sqlQuery, [email, hashedPassword, username, terms]);
         const userData = result.rows[0];
 
         //Creating a JWT token here: -
@@ -172,6 +170,7 @@ app.post('/signup', async (req, res) => {
         res.status(201).json({
             token: token,
             userId: userData.id,
+            username: userData.username,
             message: "User sucessfully registred",
         });
     }
@@ -195,52 +194,58 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => { 
     const {email, password, username, useEmail} = req.body;
-    const value = useEmail ? [email] : [username];
-    let userQuery = ``;
+    let value = null;
+    let userQuery = null;
     let isPasswordValid = false;
 
     if (useEmail){
         userQuery = `SELECT * FROM users WHERE email = $1`;
+        value = email;
     }
     else{
         userQuery = `SELECT * FROM users WHERE username = $1`;
+        value = username;
     }
     
     try{
-        const result = await pool.query(userQuery, value);
+        const result = await pool.query(userQuery, [value]);
 
         if (result.rows.length === 0){
-            console.log("Invalid Email");
             return res.status(401).json({
-                message: "Invalid email or password",
+                message: "User does not exist",
             });
         }
 
         const user = result.rows[0];
 
         if (user){
-            isPasswordValid = await bcrypt.compare(password, user.password_hash);
+            isPasswordValid = await bcrypt.compare(password, user.password);
         }
 
         if (!isPasswordValid){
-            console.log("Invalid Password");
             return res.status(401).json({
                 message: "Invalid email or password",
             });
         }
         
-        //Creating a JWT token here: -
+        //Creating a JWT token: -
         const payload = {
             userId: user.id,
             userName: user.username
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "24h"});
+        
+        //converting avatar back: -
+        let imageBase64 = null;
+        if(user.avatar_path){
+            imageBase64 = `data:image/png;base64,${user.avatar_path.toString('base64')}`;
+        }
 
-        console.log("Login Sucessfull");
         res.status(200).json({
             username: user.username,
             token: token,
-            message: "Login successful",
+            message: "Loged In successfully",
+            avatar: imageBase64,
         });
     }
     catch (err){
@@ -253,7 +258,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/change-avatar', auth, upload.single('avatar'), async (req, res) =>{
     try{
-        const avatar = req.file;
+        const avatar = req.file.buffer;
         const userId = req.user.userId;
 
         const result = await pool.query(`
@@ -272,7 +277,7 @@ app.post('/change-avatar', auth, upload.single('avatar'), async (req, res) =>{
 
         let imageBase64 = null;
         if(user.avatar_path){
-            imageBase64 = `data:image/png;base64, ${user.avatar_path.toString('base64')}`;
+            imageBase64 = `data:image/png;base64,${user.avatar_path.toString('base64')}`;
         }
         res.status(200).json({
             message: "Avatar sucessfully changed",

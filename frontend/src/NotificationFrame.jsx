@@ -27,7 +27,7 @@ function NotificationFrame(){
     
     return(
         <motion.div 
-            className="bg-Wasabi w-8/10 z-20 fixed top-0 flex justify-center items-center gap-2 p-3 pt-5 pb-5 rounded-b-2xl border-3 border-black/80 border-t-0"
+            className="bg-Wasabi w-8/10 z-100 fixed top-0 flex justify-center items-center gap-2 p-3 pt-5 pb-5 rounded-b-2xl border-3 border-black/80 border-t-0"
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             exit={{ y: -100, opacity: 0}}

@@ -35,6 +35,7 @@ function SignUpPage(){
         setNotificationError,
         setIsLoading,
         setGlobalAvatar,
+        setGlobalUserName,
     } = useContext(WeatherContext);
 
     const [userName, setUsername] = useState("");
@@ -128,16 +129,21 @@ function SignUpPage(){
             setIsLoading(true);
 
             const response = await api.post("/signup", userData);
-            const data = response.data;
-            localStorage.setItem('token', data.token);
+            const result = response.data;
             
+            localStorage.setItem('token', result.token);
+            setGlobalUserName(result.username);
+
             setShowNotification(true);
-            setNotificationMsg(data.message)
+            setNotificationMsg(result.message)
             setNotificationError(false);
 
             setUplaodAvatar(true);
+            setIsLoggedIn(true);
         }
-    catch(error){
+        catch(error){
+            console.error(error);
+        
             setShowNotification(true);
             setNotificationError(true);
             if(error.response && error.response.data){
@@ -146,8 +152,6 @@ function SignUpPage(){
             else{
                 setNotificationMsg("Server Error");
             }
-
-            console.error(error);
         }
         finally{
             setIsLoading(false);

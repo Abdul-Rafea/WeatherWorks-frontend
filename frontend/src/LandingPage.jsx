@@ -25,6 +25,9 @@ import {
 } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
 
+//lucide components: -
+import {LogOut} from "lucide-react";
+
 //main components: -
 import api from './api';
 import NotificationFrame from './NotificationFrame';
@@ -49,7 +52,8 @@ function LandingPage() {
         isLoggedIn, setIsLoggedIn,
         showNotification, setShowNotification,
         setNotificationMsg,
-        globalAvatar,
+        setNotificationError,
+        globalAvatar, setGlobalAvatar,
     }= useContext(WeatherContext);
 
     const [ProfMenuOpen, setProfMenuOpen] = useState(false);
@@ -76,13 +80,6 @@ function LandingPage() {
         }
     }
     
-    const handleLogOut = () =>{
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        setNotificationMsg("Logged out successfully");
-        setShowNotification(true);
-    }
-
     const handleNav = (value) =>{
         if ( value === 0 ){
             setNavUnderline("features");
@@ -96,6 +93,17 @@ function LandingPage() {
         else{
             setNavUnderline("community");
         }
+    }
+
+    const handleLogOut = () =>{
+        localStorage.removeItem('token');
+
+        setIsLoggedIn(false);
+        setGlobalAvatar(null);
+
+        setShowNotification(true);
+        setNotificationMsg("Loged Out Sucessfully");
+        setNotificationError(false);
     }
 
     return (
@@ -155,7 +163,13 @@ function LandingPage() {
                                 {isLoggedIn? (
                                     <>
                                     <DropdownMenuItem>
-                                        <Button></Button>
+                                        <Button
+                                            size="sm" 
+                                            className="bg-Wasabi3 text-black"
+                                            onClick={handleLogOut}
+                                        >
+                                            <LogOut className="text-black size-5" />Log Out
+                                        </Button>
                                     </DropdownMenuItem>
                                     </>
                                 ):
