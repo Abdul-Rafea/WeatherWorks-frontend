@@ -3,7 +3,6 @@ import { createContext, useState, useEffect } from 'react';
 import DefautAvatar from "./assets/Default_Profile_Pic.jpg";
 
 export const WeatherContext = createContext();
-
 export function WeatherProvider({children}){
 
     const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +21,7 @@ export function WeatherProvider({children}){
     const [globalUsername, setGlobalUsername] = useState(() =>{
         return localStorage.getItem("username") || "";
     });
+    const [tempUnit, setTempUnit] = useState("C");
 
     useEffect(() =>{
         if(globalUsername){
@@ -47,7 +47,7 @@ export function WeatherProvider({children}){
             notificationError, setNotificationError,
             globalAvatar, setGlobalAvatar,
             globalUsername, setGlobalUsername,
-
+            tempUnit, setTempUnit,
             }}>
             {children}
         </WeatherContext.Provider>

@@ -56,11 +56,11 @@ function Header(props){
     }
 
     return (
-        <header className="z-50 fixed top-0 w-full h-13 flex justify-between items-center p-2 backdrop-blur-md bg-black/70 border-b-2 border-white
+        <header className="z-50 fixed top-0 w-full h-13 flex justify-between items-center p-3 backdrop-blur-md bg-black/70 border-b-2 border-white
                     sm:p-3 sm:border-b-3">
                     <div className="w-1/2 flex justify-start items-center gap-2 
                         sm:gap-3 ">
-                        <img src={WasabiX_Logo} alt="Wasabi X logo" className="w-1/5 rounded-md
+                        <img src={WasabiX_Logo} alt="Wasabi X logo" className="w-9 rounded-sm
                             sm:w-1/7 lg:w-1/14" />
                         {!isDashboard && (
                             <h2 className="font-Andka text-Wasabi4 font-bold text-2xl 
@@ -83,7 +83,7 @@ function Header(props){
                             <DropdownMenuTrigger asChild>
                                     {isLoggedIn ? (
                                         <button>
-                                            <img src={globalAvatar} alt="User Avatar" className="w-10 rounded-full border-2 border-Wasabi4"></img>
+                                            <img src={globalAvatar} alt="User Avatar" className="w-9 rounded-full border-2 border-Wasabi4"></img>
                                         </button>
                                     ) :
                                     ( 

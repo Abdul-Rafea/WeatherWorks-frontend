@@ -10,6 +10,7 @@ import path from "path";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { json } from 'stream/consumers';
 import { get } from 'http';
+import { time } from 'console';
 
 const app = express();
 const port = process.env.PORT;
@@ -52,130 +53,199 @@ const auth = (req, res, next) =>{
     });
 }
 
-app.get('/weather', async (req, res) => {
-    const latitude = req.latitude;
-        const longitude = req.longitude;
+app.get('/', (req, res) => {
+    res.send("Wasabi X Backend is running successfully!");
+});
 
-        //units handling: -
-        const tempUnit = req.temUnit || "celcius";
-        const windUnit = req.windUnit || "kph";
-        const precipUnit = req.precipUnit || "mm";
-        const isCelcius = null;
-        const isKPH = null;
-        const isMM = null;
-        if(tempUnit === "celcius"){
-            isCelcius = true;
-        }
-        else{
-            isCelcius = false;
-        }
+app.post('/weather', async (req, res) => {
+    const {
+        lat,
+        lon,
+        reverseGeocoding,
+        unit,
+    } = req.body;
 
-        if(windUnit === "kph"){
-            isKPH = true;
-        }
-        else{
-            isKPH = false;
-        }
+    const aqiAPI_key = process.env.AQI_API_KEY;
+    const weatherAPI_key = process.env.WEATHER_API_KEY;
 
-        if(precipUnit === "mm"){
-            isMM = true;
-        }
-        else{
-            isMM = false;
-        }
-
-        const aqiAPI_key = process.env.AQI_API_KEY;
-        const aqiResponseMsg = "";
-
-        const getDayName = (dateString) => {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { weekday: 'long' });
-        };
+    //units handling: -
+    let units = null;
+    if (unit === "F"){
+        units = "us";
+    }
+    else{
+        units = "ca";
+    }
     
     try{
-        const weatherResponse = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,sunrise,sunset,uv_index_max,temperature_2m_mean,temperature_2m_max,temperature_2m_min,surface_pressure_mean,wind_speed_10m_mean,precipitation_probability_mean,relative_humidity_2m_mean&current=temperature_2m,relative_humidity_2m,is_day,weather_code,surface_pressure,wind_speed_10m${!isKPH && "&wind_speed_unit=mph"}${isCelcius && "&temperature_unit=fahrenheit"}${isMM && "&precipitation_unit=inch"}`);
+        const weatherResponse = await axios.get(`https://api.pirateweather.net/forecast/${weatherAPI_key}/${lat},${lon}?units=${units}&exclude=minutely,hourly&version=2`);
         const weatherData = weatherResponse.data;
+        console.log("Weather API response: True");
         if(!weatherData){
-            console.error("weather API error");
+            console.error("Weather API response: False");
             res.status(404).json({message: "Weather data not found"});
         }
         
-        const aqiResponse = await axios.get(`https://api.waqi.info/feed/geo:${latitude};${longitude}/?token=${aqiAPI_key}`);
-        const aqiData = aqiResponse.data;
-        if(!aqiData){
-            console.error("AQI API error");
-            aqiResponseMsg = "Air quality data not found";
+        let geoData = null;
+        if(reverseGeocoding){
+            const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${process.env.GEO_API_KEY}`);
+            geoData = geoResponse.data;
+            console.log("Reverse geocoding API response: True");
+            if(!geoData){
+                console.error("Reverse geocoding API response: False");
+            }
         }
         
-        //current data handling:-
-        const currentData = {
-            day: getDayName(weatherData.current.time),
-            temp: weatherData.curent.temperature_2m,
-            weatherCode: weatherData.current.weather_code,
-            isDay: weatherData.curent.is_day,
-            pressure: weatherData.current.surface_pressure,
-            humidity: weatherData.current.relative_humidity_2m,
+        const aqiResponse = await axios.get(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${aqiAPI_key}`);
+        const aqiData = aqiResponse.data;
+        console.log("AQI API response: True");
+        if(!aqiData){
+            console.error("AQI API response: False");
+        }
+        
+        //handling current data:-
+        const time = weatherData?.currently?.time * 1000;
+        const sunriseTime = weatherData?.daily?.data[0]?.sunriseTime * 1000;
+        const sunsetTime = weatherData?.daily?.data[0]?.sunsetTime * 1000;
+        const aqi = aqiData?.data?.aqi;
+        const uvIndex = weatherData?.currently?.uvIndex;
+        let aqiMessage = "";
+        let uvMessage = "";
+        let timeOfDay = "";
+        let geoDataInfo = null;
+
+        const getDayName = (dateString) => {
+            const date = new Date(dateString * 1000);
+            return date.toLocaleDateString('en-US', { weekday: 'long' });
+        };
+
+        const getTime = (dateString) => {
+            const time = new Date(dateString * 1000);
+            return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
 
-        //Week data handling: -
-        const weeekForecastData = weatherData.daily.time.map((date, index) => {});
-        //precipitation data handling: -
-        const precipData = weatherResponse.data.forecast.forecastday[0].hour.map((item) => ({
-            time: item.time.split(' ')[1],
-            precip: item.precip_mm
-        }))        
+        const getDate = (dateString) => {
+            const date = new Date(dateString * 1000);
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+        
+        if(time >= sunriseTime && time < sunsetTime) timeOfDay = "Day";
+        else if(time >= sunsetTime) timeOfDay = "Night";
+        else timeOfDay = "Unknown";
+        console.log("Time handling: True");
+        
+        if(aqi <= 50) aqiMessage = "Good";
+        else if(aqi > 50 && aqi <= 150) aqiMessage = "Moderate";
+        else if(aqi > 150 && aqi <= 200) aqiMessage = "Unhealthy";
+        else if(aqi > 200 && aqi <= 300) aqiMessage = "Very Unhealthy";
+        else if(aqi > 300) aqiMessage = "Hazardous";
+        else aqiMessage = "Unknown";
+        console.log("AQI handling: True");
 
-        //Final data/JSON response: -
-        res.json({
-            city: weatherResponse.data.location.name,
-            aqi: aqiResponse.data.data.aqi,
-            weatherCode: weatherResponse.data.forecast.forecastday[0].day.condition.code,
-            weatherText: weatherResponse.data.forecast.forecastday[0].day.condition.text,
-            tempC: Math.round(weatherResponse.data.current.temp_c),
-            tempF: Math.round(weatherResponse.data.current.temp_f),
-            windSpeedMPH: weatherResponse.data.current.wind_mph,
-            windSpeedKPH:weatherResponse.data.current.wind_kph,
-            pressure: weatherResponse.data.current.pressure_mb,
-            humidity: Math.round(weatherResponse.data.current.humidity),
-            feelsLikeC: Math.round(weatherResponse.data.current.feelslike_c),
-            feelsLikeF: Math.round(weatherResponse.data.current.feelslike_f),
-            windKPH: Math.round(weatherResponse.data.current.wind_kph),
-            windMPH: Math.round(weatherResponse.data.current.wind_mph),
-            uv: weatherResponse.data.current.uv,
-            timeOfDay: weatherResponse.data.current.is_day,
-            day: dayName,
-            icon: weatherResponse.data.current.condition.icon,
-            precipData: precipData,
-            sunrise: weatherResponse.data.forecast.forecastday[0].astro.sunrise,
-            sunset: weatherResponse.data.forecast.forecastday[0].astro.sunset,
-            weekData: forecastData,
+        if(uvIndex >= 0 && uvIndex < 3) uvMessage = "Low";
+        else if(uvIndex >= 3 && uvIndex < 6) uvMessage = "Moderate";
+        else if(uvIndex >= 6 && uvIndex < 8) uvMessage = "High";
+        else if(uvIndex >= 8 && uvIndex < 11) uvMessage = "Very High";
+        else if(uvIndex >= 11) uvMessage = "Extreme";
+        else uvMessage = "Unknown";
+
+        console.log("UV index handling: True");
+
+        const currentData = {
+            time: getTime(weatherData?.currently?.time),
+            date: getDate(weatherData?.currently?.time),
+            day: getDayName(weatherData?.currently?.time),
+            temp: weatherData?.currently?.temperature,
+            feelsLike: weatherData?.currently?.feelsLike,
+            icon: weatherData?.currently?.icon,
+            rainChance: (weatherData?.currently?.precipProbability) * 100,
+            humidity: (weatherData?.currently?.humidity) * 100,
+            pressure: weatherData?.currently?.pressure,
+            windSpeed: weatherData?.currently?.windSpeed,
+            uvMessage: uvMessage,
+            timeOfDay: timeOfDay, 
+            aqiMessage: aqiMessage,
+        };
+        console.log("Current data handling: True");
+        
+        if(geoData?.features[0]?.properties.city && geoData?.features[0]?.properties.country){
+            geoDataInfo = {
+                city: geoData?.features[0]?.properties?.city || "Unknown",
+                country: geoData?.features[0]?.properties?.country || "Unknown",
+            }
+        }
+        console.log("Geo data handling: True");
+
+        //handling week data: - 
+        let aqiWeekData = null;
+
+        const weekData = weatherData?.daily?.data.map((day) => {
+            const avgTemp = (day.temperatureMax + day.temperatureMax) / 2;
+
+            return {
+                summary: day.summary,
+                day: getDayName(day.time),
+                icon: day.icon,
+                sunrise: getTime(day.sunriseTime),
+                sunset: getTime(day.sunsetTime),
+                rainChance: day.precipProbability * 100,
+                hyumidity: day.humidity * 100,
+                pressure: day.pressure,
+                windSpeed: day.windSpeed,
+                uvIndex: day.uvIndex,
+                avgTemp: avgTemp,
+                minTep: day.temperatureMin,
+                maxTemp: day.temperatureMax,
+            }
+        });
+        console.log("Week data handling: True");
+
+        if(aqiData?.data?.forecast?.daily?.pm25){
+            const today = new Date().toISOString().split('T')[0];
+                aqiWeekData = aqiData?.data?.forecast?.daily?.pm25.filter((index) =>(index.day >= today)).map((dayObject) =>{
+                return {
+                    aqi: dayObject.avg,
+                }
+            })
+        }
+        console.log("AQI week data handling: True");
+
+        return res.status(200).json({
+            currentData: currentData,
+            weekData: weekData,
+            aqiWeekData: aqiWeekData,
+            aqiMessage: aqiMessage,
+            uvMessage: uvMessage,
+            geoData: geoDataInfo,
         });
     }
     catch (error){
         console.error(error.message);
-        res.status(500).json({message: "API error"});
+        return res.status(500).json({message: "Failed to fetch weather data" });
     }
     });
 
-app.get('/city-search', async (req, res) => {
+app.post('/city-search', async (req, res) => {
     try{
         const geoAPI_key = process.env.GEO_API_KEY;
-        const cityText = req.query.cityText;
+        const { searchQuery } = req.body;
         
-        const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${cityText}&limit=5&format=json&apiKey=${geoAPI_key}`);
+        const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${searchQuery}&limit=5&format=json&apiKey=${geoAPI_key}`);        
         
-        const loactaions = geoResponse.data.results.map((item) => ({
-            city: item.city,
-            country: item.country,
-            lat: item.lat,
-            lon: item.lon,
+        const searchResults = geoResponse?.data?.results?.map((index) => ({
+            country: index.country,
+            city: index.city,
+            lat: index.lat,
+            lon: index.lon,
         }));
         
-        res.json(loactaions);
+        res.status(200).json({
+            results: searchResults,    
+        });
     }
     catch (error){
         console.error(error.message);
-        res.status(500).json({message: "City search failed"});
+        res.status(500).json({message: "Failed to indentify city" });
     }
 });
 
@@ -198,7 +268,7 @@ app.post('/signup', async (req, res) => {
             userId: userData.id,
             username: username,
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "24h"});
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "5h"});
 
         res.status(201).json({
             token: token,
@@ -373,23 +443,23 @@ app.post('/update-username', auth, async (req, res) =>{
     }
 });
 
-app.get('/user-count', async (res, req) =>{
-    try{
-        const result = await pool.query(`SELECT COUNT(*) FROM users`);
-        const totalUsers = result.rows[0].count;
+// app.get('/user-count', async (res, req) =>{
+//     try{
+//         const result = await pool.query(`SELECT COUNT(*) FROM users`);
+//         const totalUsers = result.rows[0].count;
         
-        res.status(200).json({
-            totalUsers: parseInt(totalUsers)
-        });
-    }
-    catch (err){
-        console.error("Failed to fetch user count:", err.message);
-        res.status(500).json({
-            message:"Server Error"
-        });
-    }
+//         res.status(200).json({
+//             totalUsers: parseInt(totalUsers)
+//         });
+//     }
+//     catch (err){
+//         console.error("Failed to fetch user count:", err.message);
+//         res.status(500).json({
+//             message:"Server Error"
+//         });
+//     }
 
-});
+// });
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`)});
