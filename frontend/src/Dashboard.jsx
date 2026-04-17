@@ -277,9 +277,11 @@ function Dashboard(){
             console.log("weather data fetching sucess!");
 
             setWeatherData(result);
-            setCity(result?.geoDataInfo?.city + ", " + result?.geoDataInfo?.country || null);
             setLat(lat);
             setLon(lon);
+            if(reverseGeocoding){
+                setCity(result?.geoDataInfo?.city + ", " + result?.geoDataInfo?.country || null);
+            }
 
             localStorage.setItem("lastWeather", JSON.stringify(result));
             console.log(result);
@@ -289,7 +291,7 @@ function Dashboard(){
         catch(error){
             setIsLoading(false);
             setShowNotification(true);
-            setNotificationMsg("Cant Connect to server");
+            setNotificationMsg(error.response?.data?.message || "Server error, please try again later");
             setNotificationError(true);
 
             console.error("Error fetching weather data:", error);
@@ -329,11 +331,11 @@ function Dashboard(){
                                     key={index.city}
                                     className="text-black text-base font-Andika rounded-sm p-1"
                                     onClick={()=>{
-                                        fetchWeatherData(index.lat, index.lon)
                                         setLat(index.lat);
                                         setLon(index.lon);
                                         setCity(index.city + ", " + index.country);
-                                        
+                                        fetchWeatherData(index.lat, index.lon);
+
                                         localStorage.setItem("lat", index.lat);
                                         localStorage.setItem("lon", index.lon);
                                         localStorage.setItem("lastCity", index.city + ", " + index.country);
@@ -506,13 +508,14 @@ function Dashboard(){
                                 return(
                                     <CarouselItem
                                         key={dayData.day}
-                                        className=" p-1 basis-1/3 bg-black/80 flex flex-col items-center gap-1 rounded-xl border-2 border-Wasabi"
+                                        className=" p-1 basis-1/2 bg-black/80 flex flex-col items-center gap-1 rounded-xl border-2 border-Wasabi"
                                     >
-                                        <p className="text-offWhite text-base font-Andika">{dayData.day || "Not Found"}</p>
+                                        <p className="text-offWhite text-lg1 font-Andika">{dayData.day || "Not Found"}</p>
                                         <div className="w-full flex justify-center items-center">
                                             {iconMap(dayData.icon, "size-15") || iconMap("clear-day", "size-20")}
                                         </div>
-                                        <p className="text-offWhite text-xl font-Andika">{(dayData.avgTemp || "0") + " " + tempUnit}</p>
+                                        <p className="-mt-4 text-Wasabi3 text-lg">{iconToTitle[dayData.icon] ||iconToTitle["clear-day"] }</p>
+                                        <p className="text-offWhite text-2xl font-Andika">{(dayData.avgTemp || "0") + " " + tempUnit}</p>
                                     </CarouselItem>
                                 );
                             })}

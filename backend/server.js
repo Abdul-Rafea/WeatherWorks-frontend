@@ -7,10 +7,8 @@ import pool from './db.js';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from "path";
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { json } from 'stream/consumers';
-import { get } from 'http';
-import { time } from 'console';
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const port = process.env.PORT;
@@ -23,7 +21,7 @@ const upload = multer({
     limits: {filesize: 2 * 1024 * 1024 }, //computer only understand bytes :(
     fileFilter: (req, file, cb) =>{
         const filetypes = /jpeg|jpg|png/; // Regex/search pattren
-        const mimetype = filetypes.test(file.mimetype); // checks internal lable aka mimetype
+        const mimetype = filetypes.test(file.mimetype); // checks internal label aka mimetype
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase()); // checks actual extension
 
         if (mimetype && extname){
@@ -58,6 +56,8 @@ app.get('/', (req, res) => {
 });
 
 app.post('/weather', async (req, res) => {
+    const aqiAPI_key = process.env.AQI_API_KEY;
+    const weatherAPI_key = process.env.WEATHER_API_KEY;
     const {
         lat,
         lon,
@@ -65,10 +65,6 @@ app.post('/weather', async (req, res) => {
         unit,
     } = req.body;
 
-    const aqiAPI_key = process.env.AQI_API_KEY;
-    const weatherAPI_key = process.env.WEATHER_API_KEY;
-
-    //units handling: -
     let units = null;
     if (unit === "F"){
         units = "us";
@@ -76,38 +72,57 @@ app.post('/weather', async (req, res) => {
     else{
         units = "ca";
     }
-    
+
+    let weatherData = null;
+    let geoData = null;
+    let aqiData = null;
+
     try{
-        const weatherResponse = await axios.get(`https://api.pirateweather.net/forecast/${weatherAPI_key}/${lat},${lon}?units=${units}&exclude=minutely,hourly&version=2`);
-        const weatherData = weatherResponse.data;
-        console.log("Weather API response: True");
-        if(!weatherData){
-            console.error("Weather API response: False");
-            res.status(404).json({message: "Weather data not found"});
+        const weatherResponse = await axios.get(`https://api.pirateweather.net/forecast/${weatherAPI_key}/${lat},${lon}?units=${units}&exclude=minutely,hourly&version=2`,{
+            headers: { "User-Agent": 'Mozilla/5.0'}
+        });
+        console.log("Weather API response status:", weatherResponse.status);
+        if(weatherResponse.data.currently && weatherResponse.data.daily && weatherResponse.data.daily.data){
+            weatherData = weatherResponse.data;
         }
         
-        let geoData = null;
         if(reverseGeocoding){
-            const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${process.env.GEO_API_KEY}`);
-            geoData = geoResponse.data;
-            console.log("Reverse geocoding API response: True");
-            if(!geoData){
-                console.error("Reverse geocoding API response: False");
+            try{
+                const geoResponse = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${process.env.GEO_API_KEY}`, {
+                    timeout: 5000,
+                    headers: { "User-Agent": 'Mozilla/5.0'}
+                });
+                if(geoResponse.data.features && geoResponse.data.features[0].country && geoResponse.data.features[0].city){
+                    geoData = geoResponse.data;
+                } 
+            }
+            catch(error){
+                console.error("Reverse geocoding API Error:", error);
             }
         }
         
-        const aqiResponse = await axios.get(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${aqiAPI_key}`);
-        const aqiData = aqiResponse.data;
-        console.log("AQI API response: True");
-        if(!aqiData){
-            console.error("AQI API response: False");
+        try{
+            const aqiResponse = await axios.get(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${aqiAPI_key}`, {
+                timeout: 5000,
+                family: 4,
+                headers: { "User-Agent": 'Mozilla/5.0'}
+            });
+            if(aqiResponse.data.data && aqiResponse.data.data.aqi && aqiResponse.data.data.forecast && aqiResponse.data.data.forecast.daily && aqiResponse.data.data.forecast.daily.pm25){
+                aqiData = aqiResponse.data;
+            }
         }
-        
+        catch(error){
+            console.error("AQI API Error:", error);
+        }
+
         //handling current data:-
         const time = weatherData?.currently?.time * 1000;
         const sunriseTime = weatherData?.daily?.data[0]?.sunriseTime * 1000;
         const sunsetTime = weatherData?.daily?.data[0]?.sunsetTime * 1000;
-        const aqi = aqiData?.data?.aqi;
+        let aqi = null;
+        if(aqiData){
+            aqi = aqiData?.data?.aqi;
+        }
         const uvIndex = weatherData?.currently?.uvIndex;
         let aqiMessage = "";
         let uvMessage = "";
@@ -126,7 +141,7 @@ app.post('/weather', async (req, res) => {
 
         const getDate = (dateString) => {
             const date = new Date(dateString * 1000);
-            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
         }
         
         if(time >= sunriseTime && time < sunsetTime) timeOfDay = "Day";
@@ -148,39 +163,38 @@ app.post('/weather', async (req, res) => {
         else if(uvIndex >= 8 && uvIndex < 11) uvMessage = "Very High";
         else if(uvIndex >= 11) uvMessage = "Extreme";
         else uvMessage = "Unknown";
-
         console.log("UV index handling: True");
 
         const currentData = {
             time: getTime(weatherData?.currently?.time),
             date: getDate(weatherData?.currently?.time),
             day: getDayName(weatherData?.currently?.time),
-            temp: weatherData?.currently?.temperature,
-            feelsLike: weatherData?.currently?.feelsLike,
+            temp: Math.round(weatherData?.currently?.temperature),
+            feelsLike: Math.round(weatherData?.currently?.feelsLike),
             icon: weatherData?.currently?.icon,
-            rainChance: (weatherData?.currently?.precipProbability) * 100,
-            humidity: (weatherData?.currently?.humidity) * 100,
-            pressure: weatherData?.currently?.pressure,
-            windSpeed: weatherData?.currently?.windSpeed,
+            rainChance: Math.round((weatherData?.currently?.precipProbability) * 100),
+            humidity: Math.round((weatherData?.currently?.humidity) * 100),
+            pressure: Math.round(weatherData?.currently?.pressure),
+            windSpeed: Math.round(weatherData?.currently?.windSpeed),
             uvMessage: uvMessage,
             timeOfDay: timeOfDay, 
             aqiMessage: aqiMessage,
         };
         console.log("Current data handling: True");
         
-        if(geoData?.features[0]?.properties.city && geoData?.features[0]?.properties.country){
+        if(geoData){
             geoDataInfo = {
-                city: geoData?.features[0]?.properties?.city || "Unknown",
-                country: geoData?.features[0]?.properties?.country || "Unknown",
+                city: geoData?.features[0]?.properties?.city,
+                country: geoData?.features[0]?.properties?.country,
             }
-        }
         console.log("Geo data handling: True");
+        }
 
         //handling week data: - 
         let aqiWeekData = null;
 
         const weekData = weatherData?.daily?.data.map((day) => {
-            const avgTemp = (day.temperatureMax + day.temperatureMax) / 2;
+            const avgTemp = Math.round((day.temperatureMax + day.temperatureMax) / 2);
 
             return {
                 summary: day.summary,
@@ -188,34 +202,32 @@ app.post('/weather', async (req, res) => {
                 icon: day.icon,
                 sunrise: getTime(day.sunriseTime),
                 sunset: getTime(day.sunsetTime),
-                rainChance: day.precipProbability * 100,
-                hyumidity: day.humidity * 100,
-                pressure: day.pressure,
-                windSpeed: day.windSpeed,
+                rainChance: Math.round(day.precipProbability * 100),
+                hyumidity: Math.round(day.humidity * 100),
+                pressure: Math.round(day.pressure),
+                windSpeed: Math.round(day.windSpeed),
                 uvIndex: day.uvIndex,
                 avgTemp: avgTemp,
-                minTep: day.temperatureMin,
-                maxTemp: day.temperatureMax,
+                minTep: Math.round(day.temperatureMin),
+                maxTemp: Math.round(day.temperatureMax),
             }
         });
         console.log("Week data handling: True");
 
-        if(aqiData?.data?.forecast?.daily?.pm25){
+        if(aqiData){
             const today = new Date().toISOString().split('T')[0];
                 aqiWeekData = aqiData?.data?.forecast?.daily?.pm25.filter((index) =>(index.day >= today)).map((dayObject) =>{
                 return {
                     aqi: dayObject.avg,
                 }
             })
+            console.log("AQI week data handling: True");
         }
-        console.log("AQI week data handling: True");
 
         return res.status(200).json({
             currentData: currentData,
             weekData: weekData,
             aqiWeekData: aqiWeekData,
-            aqiMessage: aqiMessage,
-            uvMessage: uvMessage,
             geoData: geoDataInfo,
         });
     }
