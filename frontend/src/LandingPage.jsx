@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaGithub } from "react-icons/fa6";
 import { WeatherContext } from './WeatherContext';
 
@@ -18,15 +19,17 @@ import { ArrowUpRightIcon } from "lucide-react";
 
 //main components: -
 import Header from './header';
-import NotificationFrame from './NotificationFrame';
 import WasabiX_Logo from "./assets/WasabiX_Logo.png";
-import DeafaultProfilePic from "./assets/Default_Profile_Pic.jpg" 
-import Svg from "./svg";
 import DescriptionFrame from './descriptionFrame';
 import { useMediaQuery } from './useMediaQuery';
 
 function LandingPage() {
-    
+    const navigate = useNavigate();
+
+    const {
+        isLoading,
+        isLoggedIn
+    } = useContext(WeatherContext);
     let isMobile = useMediaQuery("(max-width: 648px");
     let isTablet = useMediaQuery("(min-width: 640px)");
     const isLaptop = useMediaQuery("(min-width: 1024px)");
@@ -34,6 +37,12 @@ function LandingPage() {
         isMobile = false;
         isTablet = false;
     }
+
+    useEffect(() =>{
+        if(!isLoading && !isLoggedIn){
+            navigate("/")
+        }
+    }, [])
 
     return (
         <>

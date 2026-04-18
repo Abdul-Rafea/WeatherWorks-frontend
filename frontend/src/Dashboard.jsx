@@ -148,6 +148,18 @@ function Dashboard(){
     else if(uvMessage === "Extreme") uvTextColor = "text-blue-500";
     else uvTextColor = "text-black";
 
+    const mainTemp = weatherData?.currentData?.temp;
+    let tempColor = "";
+    if(mainTemp <=10) tempColor = "text-blue-500";
+    else if(mainTemp <=30) tempColor = "text-yellow-500";
+    else if(mainTemp >30) tempColor = "text-red-500";
+    else tempColor = "text-offWhite";
+
+    const rainChance = weatherData?.currentData?.rainChance;
+    let rainChanceColor = "";
+    if(rainChance <= 50) rainChanceColor = "text-green-500";
+    else if(rainChance > 50) rainChanceColor = "text-red-500"
+
     useEffect(() =>{
         const handleClickOutside = (event) =>{
             if(searchRef.current && !searchRef.current.contains(event.target)){
@@ -328,7 +340,7 @@ function Dashboard(){
                         {searchResults?.results?.map((index) =>{
                             return(
                                 <button 
-                                    key={index.city}
+                                    key={index.lat}
                                     className="text-black text-base font-Andika rounded-sm p-1"
                                     onClick={()=>{
                                         setLat(index.lat);

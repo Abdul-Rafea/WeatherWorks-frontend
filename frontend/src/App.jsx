@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { WeatherContext } from "./WeatherContext";
 
@@ -14,21 +14,15 @@ import LoginPage from "./LoginPage";
 import SignUpPage from "./SignUpPage";
 import UserSettings from "./UserSettings";
 import NotificationFrame from "./NotificationFrame";
-import LoadingFrame from "./loadingFrame";
 import Portal from "./generatePortal";
 
 function App() {
     const {
-        setIsLoggedIn,
+        IsLoggedIn,
         showNotification,
         isLoading,
     } = useContext(WeatherContext);
 
-    useEffect(() =>{
-        if (localStorage.getItem("token")){
-            setIsLoggedIn(true);
-        }
-    }, [setIsLoggedIn])
 
     return(
         <>

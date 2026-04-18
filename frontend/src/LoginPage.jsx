@@ -30,7 +30,7 @@ function LoginPage(){
         setNotificationMsg,
         setShowNotification,
         setNotificationError,
-        setGlobalUserName,
+        setGlobalUsername,
         setGlobalAvatar,
     } = useContext(WeatherContext);
 
@@ -44,6 +44,7 @@ function LoginPage(){
 
     let fieldError = false; 
 
+
     const changeType = () =>{
         if (useEmail){
             setUseEmail(false);
@@ -52,6 +53,7 @@ function LoginPage(){
             setUseEmail(true);
         }
     }
+
 
     const handleLogin = async () =>{
         if(useEmail == true){
@@ -100,7 +102,7 @@ function LoginPage(){
 
             localStorage.setItem("token", result.token);
             setGlobalAvatar(result.avatar);
-            setGlobalUserName(result.username);
+            setGlobalUsername(result.username);
             setIsLoggedIn(true);
 
             setShowNotification(true);

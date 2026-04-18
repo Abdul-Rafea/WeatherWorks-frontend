@@ -3,7 +3,6 @@ import { useState, useContext } from "react";
 import { WeatherContext } from "./WeatherContext";
 import api from "./api";
 
-import LoadingFrame from "./loadingFrame";
 import NotificationFrame from "./NotificationFrame";
 
 function UserSettings(){

@@ -19,10 +19,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CornerUpLeft } from "lucide-react";
 
 // main components: -
-import NotificationFrame from './NotificationFrame';
 import WasabiX_Logo from "./assets/WasabiX_Logo.png";
 import Portal from "./generatePortal";
-import PrivacyPolicy from "./PrivacyPolicy";
 import DefaultPic from "./assets/Default_Profile_Pic.jpg";
 
 function SignUpPage(){
@@ -54,16 +52,6 @@ function SignUpPage(){
     const [avatarPreview, setAvatarPreview] = useState(DefaultPic);
 
     let fieldMissing = false;
-
-    const handleTerms = () =>{
-        if(terms == true ){
-            setTerms(false);
-        }
-        else{
-            setTerms(true);
-            setTermsError(false);
-        }
-    }
 
     const handleSignUp = async () => {
         if(userName == ""){
@@ -132,18 +120,19 @@ function SignUpPage(){
             const result = response.data;
             
             localStorage.setItem('token', result.token);
+            localStorage.removeItem('lastweather');
+
             setGlobalUsername(result.username);
+            setUplaodAvatar(true);
+            setIsLoggedIn(true);
 
             setShowNotification(true);
             setNotificationMsg(result.message)
             setNotificationError(false);
-
-            setUplaodAvatar(true);
-            setIsLoggedIn(true);
         }
         catch(error){
             console.error(error);
-        
+
             setShowNotification(true);
             setNotificationError(true);
             if(error.response && error.response.data){

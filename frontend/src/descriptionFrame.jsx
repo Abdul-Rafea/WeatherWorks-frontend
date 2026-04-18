@@ -2,7 +2,6 @@
 import { Separator } from "@/components/ui/separator";
 
 // main components: -
-import Svg from "./svg";
 import DefaultProfilePic from "./assets/Default_Profile_Pic.jpg";
 
 function CommunityFrame(props){
