@@ -60,6 +60,7 @@ import {
 import Portal from "./generatePortal";
 import api from "./api";
 import Header from "./Header";
+import Comment from "./CommentFrame";
 
 const iconMap = (index, Class) =>{
     const maping = {
@@ -97,6 +98,19 @@ const iconToTitle = {
   "hail": "Hail",
 };
 
+import DefaultAvatar from "./assets/Default_Profile_Pic.jpg";
+const mockCommentArray = [
+    {
+        id: Date.now(),
+        type: "user",
+        avatar: DefaultAvatar,
+        username: "John Doe",
+        location: "New York, USA", 
+        currentTime: new Date(), 
+        content: "This is a sample comment to demonstrate the comment section. The weather is really nice today!",
+    }
+];
+
 function Dashboard(){
 
     const {
@@ -106,6 +120,7 @@ function Dashboard(){
         setNotificationError,
         tempUnit,
         globalUsername,
+        globalAvatar,
     } = useContext(WeatherContext);
 
     const [searchPopUp, setSearchPopUp] = useState(false);
@@ -356,43 +371,48 @@ function Dashboard(){
             setIsLoading(false);
         }
     }
-
     const handleCreateCommnet = () =>{
         if(!commentText || !city){
             setShowNotification(true);
             setNotificationMsg("Please enter a comment and select a city before publishing a comment.");
             setNotificationError(true);
+            return;
         }
 
         const tempId = Date.now();
         const newComment = {
             id: tempId,
-            content: commentText,
+            type: "user",
+            avatar: globalAvatar,
             username: globalUsername,
-            city: city,
+            location: city, 
+            timeAgo: new Date(), 
+            content: commentText,
         }
 
         setIsCommentCreated(true);
+        handlePublishComment(newComment);
     }
 
-    const handlePublishComment = async () =>{
+    const handlePublishComment = async (commentObj) =>{
+        if(!isCommentCreated){
+            setShowNotification(true);
+            setNotificationMsg("Please create a comment before publishing.");
+            setNotificationError(true);
+            return;
+        }
+
         try{
             setCommentLoading(true);
             setIsCommentPublished(false);
 
-            if(!commentText || !city){
-                setShowNotification(true);
-                setNotificationMsg("Please enter a comment and select a city before publishing a comment.");
-                setNotificationError(true);
-            }
-
             const response = await api.post("/publish-comment", {
-                content: commentText,
-                city: city || "Unknown",
+                comment: commentObj,
             });
             const result = await response.data;
 
-            setIsCommentPublished(result.sucess);
+            setIsCommentPublished(result.success);
+            setComments((prevComments) => [commentObj, ...prevComments]);
         }
         catch{
             setShowNotification(true);
@@ -627,8 +647,22 @@ function Dashboard(){
                                 <h2 className="text-Wasabi font-Andika text-xl text-shadow-xs text-shadow-Wasabi">Comments</h2>
                             </div>
                             <div className="w-full p-2 bg-bgMain rounded-xl shadow-centerBlack">
-                                <div>
-
+                                <div className="w-full flex justify-center items-center p-2">
+                                    {mockCommentArray.map((commentObj) =>{
+                                        return(
+                                            <Comment 
+                                                key={commentObj.id}
+                                                type = "user"
+                                                avatar = {commentObj.avatar}
+                                                username = {commentObj.username}
+                                                message = {commentObj.content}
+                                                location = {commentObj.location}
+                                                time = {commentObj.currentTime}
+                                                isLoading = {commentLoading}
+                                                isPublished = {isCommentPublished}  
+                                            />
+                                        );
+                                    })}
                                 </div>
                                 <div className="w-full flex items-center gap-2">
                                     <Input 
@@ -639,9 +673,12 @@ function Dashboard(){
                                         onChange={(e) => setCommentText(e.target.value)}
                                     >
                                     </Input>
-                                    <div className="p-1.5 rounded-full bg-Wasabi">
+                                    <button 
+                                        className="p-1.5 rounded-full bg-Wasabi"
+                                        onClick={handleCreateCommnet}
+                                    >
                                         <SendHorizontal className="size-7" />
-                                    </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>

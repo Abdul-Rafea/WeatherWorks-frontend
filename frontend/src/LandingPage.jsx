@@ -122,9 +122,9 @@ function LandingPage() {
                         type = "feed"
                         avatar = {DefaultProfilePic}
                         username = "Hamza_Ali"
-                        message = "Too hot today in Joahr town, take water with you"
                         location = "Johar Town, Lahore"
-                        time = "6 hours ago"
+                        time = {new Date()}
+                        message = "Too hot today in Joahr town, take water with you"
                     />
                     <CommentFrame
                         type = "feed"
@@ -132,7 +132,7 @@ function LandingPage() {
                         username = "Ahmed_Raza123"
                         message = "Traffic jam and snowfall in manchester today."
                         location = "Manchester, UK"
-                        time = "10 hours ago"
+                        time = {new Date()}
                     />
                     <CommentFrame
                         type = "feed"
@@ -140,7 +140,7 @@ function LandingPage() {
                         username = "Ella98"
                         message = "light rain in NYC today, perfect weather to go out"
                         location = "New York City, USA"
-                        time = "18 hours ago"
+                        time = {new Date()}
                     />       
                 </div>
             </section>
