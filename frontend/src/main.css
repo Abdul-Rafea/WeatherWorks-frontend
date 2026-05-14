@@ -9,11 +9,14 @@
   --font-Andika: "Andika", sans-serif;
   --font-ContrailOne: "Contrail One", system-ui;
 
+  --color-bgMain: #303030;
   --color-offWhite: #E7E7E7;
-  --color-Wasabi: #35DB4C;
+  --color-Wasabi: #00bf63;
   --color-Wasabi2: #1FB233;
   --color-Wasabi3: #4DE061;
   --color-Wasabi4: #74E784;
+
+ --shadow-centerBlack: 0 0 15px 0 #000000;
 }
 @layer components{
   .section-title{
@@ -78,6 +81,27 @@ html, body{
   min-height: 100%;
   overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+@keyframes rain {
+    0% {
+      transform: translateY(15vh); /* Start above the screen */
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh); /* End below the screen */
+      opacity: 0;
+    }
+}
+
+.rain-drop {
+  animation: rain 2s linear infinite;
 }
 
 @utility font-ContrailOne{

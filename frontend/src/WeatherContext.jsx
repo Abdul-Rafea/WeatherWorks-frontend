@@ -4,9 +4,9 @@ import { createContext, useState, useEffect } from 'react';
 import DefautAvatar from "./assets/Default_Profile_Pic.jpg";
 import api from './api';
 
-//Creating Context: -
     //eslint-disable-next-line
 export const WeatherContext = createContext();
+
 export function WeatherProvider({children}){
     const [isLoading, setIsLoading] = useState(false);
     const [locationCoords, setLocationCoords] = useState({lat: null, lon: null});
@@ -21,22 +21,33 @@ export function WeatherProvider({children}){
     });
     const [globalUsername, setGlobalUsername] = useState("Username");
     const [tempUnit, setTempUnit] = useState("C");
-
+    const [loginFlag, setLoginFlag] = useState(() =>{
+        return localStorage.getItem("loginFlag") || false;
+    });
     useEffect(() =>{
-        setIsLoading(true);
+        const handleVerifySession= async () =>{
+            try{
+                setIsLoading(true);
 
-        api.get('/verify-session')
-        .then((res) =>{
-            setIsLoggedIn(true);
-            setGlobalUsername(res.data.username);
-        })
-        .catch((error) =>{
-            console.error(error);
-        });
-        
-        setIsLoading(false);
-        //eslint-disable-next-line
-    }, []);
+                const response = await api.get('/verify-session');
+                const result = response.data;
+
+                setIsLoggedIn(result.isLoggedIn);
+                setGlobalUsername(result.username);
+            }
+            catch(err){
+                console.error(err);    
+                setIsLoggedIn(false);
+            }
+            finally{
+                setIsLoading(false);
+            }
+        }
+
+        if(loginFlag){
+            handleVerifySession();    
+        }
+    }, [loginFlag]);
 
     useEffect(() =>{
         if(globalAvatar && globalAvatar != DefautAvatar){

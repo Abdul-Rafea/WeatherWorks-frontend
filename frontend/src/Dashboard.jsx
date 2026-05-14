@@ -31,6 +31,8 @@ import {
     Search,
     X,
     RotateCcw,
+    ChevronLeft,
+    SendHorizontal,
 } from "lucide-react";
 
 //motion components: -
@@ -56,8 +58,8 @@ import {
 
 //main components: -
 import Portal from "./generatePortal";
-import Header from "./header";
 import api from "./api";
+import Header from "./Header";
 
 const iconMap = (index, Class) =>{
     const maping = {
@@ -103,8 +105,9 @@ function Dashboard(){
         setNotificationMsg,
         setNotificationError,
         tempUnit,
+        globalUsername,
     } = useContext(WeatherContext);
-    
+
     const [searchPopUp, setSearchPopUp] = useState(false);
     const [showSidebar, setShowSidebar] = useState(false);
     const [weatherData, setWeatherData] = useState(() =>{
@@ -129,6 +132,11 @@ function Dashboard(){
         const storedLon = localStorage.getItem("lon");
         return storedLon ? parseFloat(storedLon) : null;
     });
+    const [commentText, setCommentText] = useState("");
+    const [commentLoading, setCommentLoading] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [isCommentPublished, setIsCommentPublished] = useState(false);
+    const [isCommentCreated, setIsCommentCreated] = useState(false);
 
     const aqiMessage = weatherData?.currentData?.aqiMessage;
     let aqiTextColor = "";
@@ -155,10 +163,45 @@ function Dashboard(){
     else if(mainTemp >30) tempColor = "text-red-500";
     else tempColor = "text-offWhite";
 
+    const feelsLikeTemp = weatherData?.currentData?.feelsLike;
+    let feelsLikeTempColor = "";
+    if(feelsLikeTemp <= 10) feelsLikeTempColor = "text-blue-500";
+    else if(feelsLikeTemp <= 30) feelsLikeTempColor = "text-yellow-500";
+    else if(feelsLikeTemp > 30) feelsLikeTempColor = "text-red-500";
+    else feelsLikeTempColor = "text-offWhite";
+
     const rainChance = weatherData?.currentData?.rainChance;
     let rainChanceColor = "";
-    if(rainChance <= 50) rainChanceColor = "text-green-500";
-    else if(rainChance > 50) rainChanceColor = "text-red-500"
+    if(rainChance <= 50) rainChanceColor = "text-blue-500";
+    else if(rainChance > 50) rainChanceColor = "text-red-500";
+
+    const humidity = weatherData?.currentData?.humidity;
+    let humidityColor = "";
+    if(humidity <= 30) humidityColor = "text-red-500";
+    else if(humidity <= 50) humidityColor = "text-blue-500";
+    else if(humidity <= 80) humidityColor = "text-yellow-500";
+    else if (humidity > 80) humidityColor = "text-red-500";
+    else humidityColor = "text-ofWhite";
+
+    const pressure = weatherData?.currentData?.pressure;
+    let pressureColor = "";
+    if(pressure <= 1009) pressureColor = "text-red-500";
+    else if(pressure > 1009) pressureColor = "text-blue-500";
+    else pressureColor = "text-offWhite";
+
+    const windSpeed = weatherData?.currentData?.windSpeed;
+    let windSpeedColor = "";
+    if(windSpeed <= 20) windSpeedColor = "text-blue-500";
+    else if(windSpeed <= 40) windSpeedColor = "text-yellow-500";
+    else if(windSpeed > 40) windSpeedColor = "text-red-500";
+    else windSpeedColor = "text-offWhite";
+
+    const uvIndex = weatherData?.currentData?.uvMessage;
+    let uvIndexColor = "";
+    if(uvIndex === "Low") uvIndexColor = "text-blue-500";
+    else if(uvIndex === "Moderate") uvIndexColor = "text-yellow-500";
+    else if(uvIndex === "High" || uvIndex === "Very High" || uvIndex === "Extreme") uvIndexColor = "text-red-500";
+    else uvIndexColor = "text-offWhite";
 
     useEffect(() =>{
         const handleClickOutside = (event) =>{
@@ -190,7 +233,7 @@ function Dashboard(){
         if(showSidebar){
             setShowSidebar(false);
         }
-        else{
+        else{     
             setShowSidebar(true);
         }
     }
@@ -314,11 +357,58 @@ function Dashboard(){
         }
     }
 
+    const handleCreateCommnet = () =>{
+        if(!commentText || !city){
+            setShowNotification(true);
+            setNotificationMsg("Please enter a comment and select a city before publishing a comment.");
+            setNotificationError(true);
+        }
+
+        const tempId = Date.now();
+        const newComment = {
+            id: tempId,
+            content: commentText,
+            username: globalUsername,
+            city: city,
+        }
+
+        setIsCommentCreated(true);
+    }
+
+    const handlePublishComment = async () =>{
+        try{
+            setCommentLoading(true);
+            setIsCommentPublished(false);
+
+            if(!commentText || !city){
+                setShowNotification(true);
+                setNotificationMsg("Please enter a comment and select a city before publishing a comment.");
+                setNotificationError(true);
+            }
+
+            const response = await api.post("/publish-comment", {
+                content: commentText,
+                city: city || "Unknown",
+            });
+            const result = await response.data;
+
+            setIsCommentPublished(result.sucess);
+        }
+        catch{
+            setShowNotification(true);
+            setNotificationMsg("Failed to publish comment. Please try again later.");
+            setNotificationError(true);
+        }
+        finally{
+            setCommentLoading(false);
+        }
+    }
+
     const SearchBar = () =>{
         return(
             <div 
                 ref={searchRef}
-                className="relative w-9/10 flex flex-col items-center"
+                className="z-1 relative w-9/10 flex flex-col items-center"
             >
                 {searchLoading ? (
                     <Spinner className="absolute size-6 text-Wasabi3 z-20 right-3 top-1/2 -translate-y-1/2" />
@@ -329,14 +419,14 @@ function Dashboard(){
                 <Input 
                     type="text" 
                     placeholder="Type city here" 
-                    className="z-10 bg-black/60"
+                    className="z-10 text-lg font-Andika font-medium shadow-md shadow-black"
                     value={searchQuery}
                     onFocus={() => setShowSearchResults(true)}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 >
                 </Input>
                 {searchResults && showSearchResults && (
-                    <div className="absolute translate-y-full bottom-0 left-0 p-2 w-full bg-Wasabi3 flex flex-col items-start gap-2 rounded-b-lg">
+                    <div className="absolute translate-y-full bottom-0 left-0 p-2 w-full bg-Wasabi flex flex-col items-start gap-2 rounded-b-lg">
                         {searchResults?.results?.map((index) =>{
                             return(
                                 <button 
@@ -366,27 +456,27 @@ function Dashboard(){
     }
 
     return (
-        <div className="w-full min-h-screen relative flex justify-start items-center flex-col">
-            <Header isDashboard={true} />
+        <div className=" w-full min-h-screen bg-bgMain flex justify-start items-center flex-col">
+            <Header type="dashboard" />
             <motion.div
                 initial={{ x: "-85%" }}
                 animate={{ x: showSidebar? 0 : "-85%" }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="w-60 h-screen fixed left-0 z-50 mt-13 bg-black/80"
+                className="z-2 w-60 h-screen fixed left-0  mt-15 bg-Wasabi flex justify-end items-center rounded-r-2xl shadow-lg shadow-black"
 
             >
-                <div className="w-full flex justify-end pt-1 pr-1">
-                <button onClick={openSidebar}>
-                    <Menu className="size-8 text-offWhite" />
-                </button>
+                <div className=" w-min h-full flex justify-center">
+                    <button onClick={openSidebar}>
+                        <ChevronLeft className="size-10 text-black rotate-180" />
+                    </button>
                 </div>
             </motion.div>
-            <div className="mt-15 ml-9 p-2 w-full flex flex-col items-center">
+            <div className="mt-40 ml-9 p-2 w-full flex flex-col items-center">
                 {SearchBar()}
             </div>
             <section className="ml-9 p-2 w-full flex flex-col items-center">
                 {searchPopUp? (
-                    <div className="w-9/10 h-1/2-screen p-3 flex flex-col items-center gap-3 bg-black/50 rounded-xl">
+                    <div className="w-9/10 h-1/2-screen p-3 flex flex-col items-center gap-3 rounded-xl">
                         <p className="text-lg text-offWhite font-Andika text-nowrap">
                             Search Soemthing to get startted
                         </p>
@@ -402,8 +492,8 @@ function Dashboard(){
                     </div>
                 ):
                 (
-                    <div className="p-3 w-9/10 bg-black/70 rounded-lg flex flex-col justify-center items-center">
-                        <div className="w-full text-sm text-gray-400 font-Andika flex justify-between">
+                    <div className="p-3 w-9/10 rounded-lg flex flex-col justify-center items-center">
+                        <div className="w-full text-sm text-gray-400 font-Andika font-medium flex justify-between">
                             <p>last updated: {weatherData?.currentData?.time + ", " + weatherData?.currentData?.date || "Not found"}</p>
                             <button onClick={()=>{
                                 if(city) fetchWeatherData(lat, lon)
@@ -419,8 +509,8 @@ function Dashboard(){
                         <div>
                             {iconMap(weatherData?.currentData?.icon, "size-30") || iconMap("clear-day", "size-30")}
                         </div>
-                        <div className="-mt-3 mb-1 pl-2 pr-2 w-full text-Wasabi3 text-xl font-Andika flex justify-between">
-                            <div className="flex gap-2">
+                        <div className="-mt-3 mb-1 pl-2 pr-2 w-full text-Wasabi3 text-2xl font-Andika flex justify-between">
+                            <div className={`${weatherData?.currentData?.timeOfDay === "day"? "text-yellow-200" : "text-offWhite"} flex gap-2`}>
                                 {weatherData?.currentData?.timeOfDay === "day"? (
                                     <>
                                         <Sun className="size-7" />
@@ -439,23 +529,36 @@ function Dashboard(){
                             </div>
                         </div>
                         <h1 className="text-5xl text-offWhite font-Andika">
-                            {(weatherData?.currentData?.temp ?? "Not found") + " " + tempUnit }
+                            <span className={tempColor}>
+                                {weatherData?.currentData?.temp ?? "Not found"}
+                            </span>
+                            {tempUnit === "C"? "℃" : "°F" }
                         </h1>
-                        <p className="mt-3 mb-5 w-9/10 text-sm text-center text-Wasabi font-Andika flex justify-center">
+                        <p className="mt-3 mb-5 w-9/10 text-base text-center text-Wasabi font-Andika font-medium flex justify-center">
                             {weatherData?.weekData[0]?.summary || "Not found"}
                         </p>
                         <div className="w-8/10 flex flex-col items-start gap-1">
                             <div className="text-base font-Andika text-offWhite flex gap-2">
                                 <ThermometerSnowflake />
-                                Feels Like: {(weatherData?.currentData?.feelsLike ?? "Not Foumd") + " " + tempUnit}
+                                Feels Like:
+                                <span className={feelsLikeTempColor}>
+                                    {(weatherData?.currentData?.feelsLike ?? "Not Foumd")}
+                                </span>
+                                {tempUnit === "C"? "℃" : "°F" }
                             </div>
                             <div className="text-base font-Andika text-offWhite flex gap-2 text-nowrap">
                                 <Umbrella />
-                                Rain Chance: {weatherData?.currentData?.rainChance ?? "(Not found)"}%
+                                Rain Chance:
+                                <span className={rainChanceColor}>
+                                    {weatherData?.currentData?.rainChance ?? "(Not found)"}%
+                                </span>
                             </div>
-                            <div className={`text-lg font-Andika ${aqiTextColor} flex gap-2`}>
+                            <div className="text-lg font-Andika text-offWhite flex gap-2">
                                 <SprayCan />
-                                Air Quality: {weatherData?.currentData?.aqiMessage || "Not found"}
+                                Air Quality:
+                                <span className={aqiTextColor}>
+                                    {weatherData?.currentData?.aqiMessage || "Not found"}
+                                </span>
                             </div>
                         </div>
                         <AnimatePresence>
@@ -465,23 +568,38 @@ function Dashboard(){
                                     animate={{ y: weatherInfo? 0 : "-100%", opacity: 1 }}
                                     transition={{ duration: 0.4, ease: "easeInOut" }}
                                     exit = {{y: "-100", opacity: 0}}
-                                    className="mt-2 w-9/10 rounded-md bg-Wasabi3 text-base text-black font-Andika p-2 flex flex-col items-start gap-1"
+                                    className="mt-2 w-9/10 rounded-md bg-Wasabi text-base text-black font-Andika p-2 flex flex-col items-start gap-1"
                                 >
-                                    <div className="text-base font-Andika texct-black flex gap-2">
+                                    <div className="flex gap-2">
                                         <Waves />
-                                        Humidity: {weatherData?.currentData?.humidity || "Not found"}%
+                                        Humidity:
+                                        <span className={`${humidityColor} text-shadow-xs text-shadow-black`}>
+                                            {weatherData?.currentData?.humidity || "Not found"}
+                                        </span>
+                                        %
                                     </div>
-                                    <div className="text-base font-Andika texct-black flex gap-2">
+                                    <div className="flex gap-2">
                                         <Gauge />
-                                        Pressure: {weatherData?.currentData?.pressure || "Not found"} hPa
+                                        Pressure:
+                                        <span className={`${pressureColor} text-shadow-xs text-shadow-black`}>
+                                            {weatherData?.currentData?.pressure || "Not found"}
+                                        </span>
+                                        hPa
                                     </div>
-                                    <div className="text-base font-Andika texct-black flex gap-2">
+                                    <div className="flex gap-2">
                                         <Wind />
-                                        Wind Speed: {weatherData?.currentData?.windSpeed || "Not found"}{tempUnit === "C"? "kph" : "mph"}
+                                        Wind Speed:
+                                        <span className={`${windSpeedColor} text-shadow-xs text-shadow-black`}>
+                                            {weatherData?.currentData?.windSpeed || "Not found"}
+                                        </span>
+                                        {tempUnit === "C"? "kph" : "mph"}
                                     </div>
-                                    <div className={`text-base font-Andika text-${uvTextColor} flex gap-2`}>
+                                    <div className={`text-${uvTextColor} flex gap-2`}>
                                         <Sun />
-                                        UV Index: {weatherData?.currentData?.uvMessage || "Not found"}
+                                        UV Index:
+                                        <span className={`${uvIndexColor} text-shadow-xs text-shadow-black`}>
+                                            {weatherData?.currentData?.uvMessage || "Not found"}
+                                        </span>
                                     </div>
                                 </motion.div>
                             )}
@@ -502,6 +620,30 @@ function Dashboard(){
                                     </>
                                 )}
                             </Button>
+                        </div>
+                        <div className="w-full flex flex-col gap-3">
+                            <div className="mt-10 w-full flex justify-start items-center gap-2">
+                                <MessageSquareText className="text-Wasabi size-7" />
+                                <h2 className="text-Wasabi font-Andika text-xl text-shadow-xs text-shadow-Wasabi">Comments</h2>
+                            </div>
+                            <div className="w-full p-2 bg-bgMain rounded-xl shadow-centerBlack">
+                                <div>
+
+                                </div>
+                                <div className="w-full flex items-center gap-2">
+                                    <Input 
+                                        type="text" 
+                                        placeholder="Enter text" 
+                                        className="z-10 text-lg font-Andika font-medium shadow-md shadow-black"
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                    >
+                                    </Input>
+                                    <div className="p-1.5 rounded-full bg-Wasabi">
+                                        <SendHorizontal className="size-7" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )

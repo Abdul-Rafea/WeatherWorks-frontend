@@ -16,12 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 //lucide components: -
-import { CornerUpLeft } from "lucide-react";
+
 
 // main components: -
-import WasabiX_Logo from "./assets/WasabiX_Logo.png";
+import WasabiX_Logo from "./assets/WasabiX_Logo.webp";
 import Portal from "./generatePortal";
 import DefaultPic from "./assets/Default_Profile_Pic.jpg";
+import Header from './Header';
 
 function SignUpPage(){
     const navigate = useNavigate();
@@ -121,6 +122,7 @@ function SignUpPage(){
             
             localStorage.setItem('token', result.token);
             localStorage.removeItem('lastweather');
+            localStorage.setItem("loginFlag", true);
 
             setGlobalUsername(result.username);
             setUplaodAvatar(true);
@@ -221,33 +223,26 @@ function SignUpPage(){
                     </div>
                 </Portal>
             )}       
-            <div className="authBack">
-                <div className="w-9/10 mt-5 mb-5">
-                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">
-                        <Link to="/">
-                            <CornerUpLeft className="size-7"/>
-                            Return
-                        </Link>    
-                    </Button>
-                </div>
-                <div className="authMain">
-                    <img src={WasabiX_Logo} alt="WasaiX Avatar" className="w-1/4 rounded-md " />
+            <div className="w-full pt-20 min-h-screen bg-bgMain flex flex-col justify-center items-center gap-10 p-5">
+                <Header type="auth" />
+                <div className="w-full flex flex-col items-center gap-2 rounded-2xl p-5">
                     <div className="authHeader">
-                        <h2 className="authTagline">WasabiX</h2>
-                        <h1 className="authHeading">Join the community today</h1>
+                        <h2 className="text-3xl text-Wasabi font-Andika font-medium text-shadow-md text-shadow-Wasabi">Join the Community</h2>
+                        <h1 className="text-lg text-white font-Andika font-medium text-shadow-xs text-shadow-white">Please enter your details for signup</h1>
                     </div>
                     <FieldSet className="w-full">
                         <FieldGroup>
                             <Field>
                                 <FieldLabel 
-                                    className={`${usernameError ? "authLabelError" : "authLabel"}`}
+                                    className={`${usernameError ? "text-red-500" : "text-white"} text-base font-Andika font-bold`}
                                     htmlFor="username"
                                 >
                                     Username
                                 </FieldLabel>
                                 <Input 
-                                    className="authInput" 
+                                    className="text-lg text-Wasabi font-Andika font-medium placeholder:text-Wasabi" 
                                     aria-invalid={usernameError}
+                              
                                     id="username" 
                                     type="text" 
                                     value={userName}
@@ -258,13 +253,13 @@ function SignUpPage(){
                             </Field>
                             <Field>
                                 <FieldLabel
-                                    className={`${emailError? "authLabelError" : "authLabel"}`} 
+                                    className={`${emailError? "text-red-500" : "text-white"} text-base font-Andika font-bold`} 
                                     htmlFor="email" 
                                 >
                                     Email
                                 </FieldLabel>
                                 <Input 
-                                    className="authInput"
+                                    className="text-lg text-Wasabi font-Andika font-medium placeholder:text-Wasabi"
                                     aria-invalid={emailError}
                                     id="email" 
                                     type="text"
@@ -276,13 +271,13 @@ function SignUpPage(){
                             </Field>
                             <Field>
                                 <FieldLabel
-                                    className={`${passwordError? "authLabelError" : "authLabel"}`} 
+                                    className={`${passwordError? "text-red-500" : "text-white"} text-base font-Andika font-bold`} 
                                     htmlFor="password"
                                 >
                                     Password
                                 </FieldLabel>
                                 <Input 
-                                    className="authInput"
+                                    className="text-lg text-Wasabi font-Andika font-medium placeholder:text-Wasabi"
                                     aria-invalid={passwordError}
                                     id="passowrd" 
                                     type="password" 
@@ -293,13 +288,13 @@ function SignUpPage(){
                             </Field>
                             <Field>
                                 <FieldLabel
-                                    className={`${confirmPasswordError? "authLabelError" : "authLabel"}`} 
+                                    className={`${confirmPasswordError? "text-red-500" : "text-white"} text-base font-Andika font-bold`} 
                                     htmlFor="confirmPassword"
                                 >
                                     Confirm Password
                                 </FieldLabel>
                                 <Input 
-                                    className="authInput"
+                                    className="text-lg text-Wasabi font-Andika font-medium placeholder:text-Wasabi"
                                     aria-invalid={confirmPasswordError}
                                     id="confirmPassword"
                                     type="password"
@@ -309,7 +304,7 @@ function SignUpPage(){
                                 />
                             </Field>
                             <Field orientation="horizontal" data-invalid>
-                                <Checkbox className="size-5" 
+                                <Checkbox className="size-6 rounded-sm" 
                                     aria-invalid = {termsError}
                                     id="terms" 
                                     name="terms" 
@@ -317,17 +312,24 @@ function SignUpPage(){
                                     onCheckedChange={(checked) => setTerms(checked)}
                                 />
                                 <FieldLabel htmlFor="terms" 
-                                    className={` ${termsError ? "text-lg text-red-500 font-Andika font-bold" : "authLabel"}`}>
+                                    className={` ${termsError ? "text-red-500" : "text-white"} text-base font-Andika font-bold`}>
                                     Accept terms and conditions
                                 </FieldLabel>
                             </Field>
                         </FieldGroup>
                     </FieldSet>
-                    <Button 
-                        size="sm"
-                        onClick={handleSignUp} 
-                        className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Sign Up</Button>
-                    <Link to="/login" className="text-xl text-black/80 font-Andika underline">Already have an account?</Link>
+                    <button
+                        className="mt-5 mb-5 p-1 pl-6 pr-6 bg-Wasabi text-lg text-black font-Andika rounded-full"
+                        onClick={handleSignUp}
+                    >
+                        Signup
+                    </button>
+                        <Link 
+                            className="text-xl text-Wasabi font-Andika"
+                            to="/login"
+                        >
+                            Create an Account
+                        </Link>
                 </div>
             </div>
         </>

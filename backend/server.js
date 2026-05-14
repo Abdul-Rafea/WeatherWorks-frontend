@@ -1,18 +1,7 @@
 import 'dotenv/config';
-
 import express from 'express';
-const app = express();
-app.use(express.json());
-
 import cors from 'cors';
-app.use(cors({
-    origin: 'http://localhost:5173', 
-    credentials: true,
-}));
-
 import cookieParser from 'cookie-parser';
-app.use(cookieParser());
-
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import pool from './db.js';
@@ -20,7 +9,23 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from "path";
 import dns from 'node:dns';
+import { v2 as cloudinary } from 'cloudinary';
+
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true,
+}));
 dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const port = process.env.PORT;
 
@@ -47,9 +52,10 @@ const auth = (req, res, next) =>{
     const token = req.cookies.token || null;
 
     if(!token){
-        console.error("   -no token found!");
+        console.error("   -no token found");
         return res.status(401).json({
             message: "Authorization denied",
+            isLoggedIn: false,
         });
     }
 
@@ -73,10 +79,17 @@ app.get('/', (req, res) => {
 });
 
 app.get('/verify-session', auth, (req, res) =>{
-    res.status(200).json({
-        loggedIn: true,
-        username: req.user.username,
-    });
+    if(req.user && req.user.username){
+        res.status(200).json({
+            isLoggedIn: true,
+            username: req.user.username,
+       });
+    }
+    else{
+        res.status(400).json({
+            message: "Server Error",
+        })
+    }
 });
 
 app.post('/signup', async (req, res) => {
@@ -110,7 +123,7 @@ app.post('/signup', async (req, res) => {
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "5h"});
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             maxAge: 6 * 60 * 60 * 1000,
             sameSite: 'lax',
         });
@@ -127,7 +140,7 @@ app.post('/signup', async (req, res) => {
         let errorMessage = "";
 
 
-        if(err.code == '23505'){
+        if(error.code == '23505'){
             errorMessage = "Email or username already exists";
         }
         else{
@@ -166,7 +179,7 @@ app.post('/change-avatar', auth, upload.single('avatar'), async (req, res) =>{
         }
 
         let imageBase64 = null;
-        if(user.avatar_path){
+        if(user.avatar_path){ 
             imageBase64 = `data:image/png;base64,${user.avatar_path.toString('base64')}`;
         }
         
@@ -212,7 +225,7 @@ app.post('/login', async (req, res) => {
 
         if (user && result.rows.length === 0 && user.password){
             console.error("   -database error!");
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "User does not exist",
             });
         }
@@ -221,7 +234,7 @@ app.post('/login', async (req, res) => {
 
         if (!isPasswordValid){
             console.error("   -invalid password");
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "Invalid email or password",
             });
         }
@@ -235,13 +248,13 @@ app.post('/login', async (req, res) => {
         //Creating a JWT token and cookie: -
         const payload = {
             userId: user.id,
-            userName: user.username
+            username: user.username
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "24h"});
         
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             maxAge: 6 * 60 * 60 * 1000,
             sameSite: 'lax',
         });
@@ -486,7 +499,7 @@ app.post('/update-username', auth, async (req, res) =>{
         const result = await pool.query(`SELECT password_hash FROM users WHERE username = $1`, [username]);
         
         if (result.rows.length === 0){
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "Incorrect password",
             });
         }
@@ -494,7 +507,7 @@ app.post('/update-username', auth, async (req, res) =>{
         const checkPasswordHash = await bcrypt.compare(password, result.rows[0].password_hash);
         
         if (!checkPasswordHash){
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "Incorrect password",
             });
         }

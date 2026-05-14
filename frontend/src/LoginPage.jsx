@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input"
 import { CornerUpLeft } from "lucide-react";
 
 // main components: -
-import WasabiX_Logo from "./assets/WasabiX_Logo.png";
+import Header from './Header';
 
 function LoginPage(){
     const navigate = useNavigate();
@@ -101,10 +101,11 @@ function LoginPage(){
             const result = response.data;
 
             localStorage.setItem("token", result.token);
+            localStorage.setItem("loginFlag", true);
+
             setGlobalAvatar(result.avatar);
             setGlobalUsername(result.username);
             setIsLoggedIn(true);
-
             setShowNotification(true);
             setNotificationMsg(result.message);
             setNotificationError(false);
@@ -130,20 +131,12 @@ function LoginPage(){
 
     return(
         <>
-            <div className="authBack">
-                <div className="w-9/10 mt-5 mb-5">
-                    <Button asChild size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black rounded-lg">
-                        <Link to="/">
-                            <CornerUpLeft className="size-7"/>
-                            Return
-                        </Link>    
-                    </Button>
-                </div>
-                <div className="authMain">
-                    <img src={WasabiX_Logo} alt="WasaiX Avatar" className="w-1/4 rounded-md " />
+            <div className="w-full min-h-screen bg-bgMain flex flex-col justify-center items-center gap-10 p-5">
+                <Header type="auth" />
+                <div className="w-full flex flex-col items-center gap-2 rounded-2xl p-5">
                     <div className="authHeader">
-                        <h2 className="authTagline">Welcome Back!</h2>
-                        <h1 className="authHeading">Please Log In to continue</h1>
+                        <h2 className="text-3xl text-Wasabi font-Andika font-medium text-shadow-md text-shadow-Wasabi">Welcome Back!</h2>
+                        <h1 className="text-lg text-white font-Andika font-medium text-shadow-xs text-shadow-white">Please Login to continue</h1>
                     </div>
                     <FieldSet className="w-full">
                         <FieldGroup>
@@ -151,12 +144,12 @@ function LoginPage(){
                                 <Field>
                                     <FieldLabel
                                         htmlFor="email" 
-                                        className={`${emailError ? "authLabelError" : "authLabel"}`}
+                                        className={`${emailError ? "text-red-500" : "text-white"} text-base font-Andika font-bold`}
                                     >
                                         Email
                                     </FieldLabel>
                                     <Input 
-                                        className="authInput"
+                                        className="text-lg text-Wasabi font-Andika font-medium placeholder:text-Wasabi"
                                         aria-invalid={emailError}
                                         id="email" 
                                         type="email" 
@@ -171,12 +164,12 @@ function LoginPage(){
                                 <Field>
                                     <FieldLabel 
                                         htmlFor="username" 
-                                        className={`${usernameError? "authLabelError" : "authLabel"}`}
+                                        className={`${usernameError? "text-red-500" : "text-white"} text-base font-Andika font-bold`}
                                     >
                                         Username
                                     </FieldLabel>
                                     <Input 
-                                        className="authInput"
+                                        className="text-lg text-Wasabi font-Andika font-medium"
                                         aria-invalid={usernameError}
                                         id="username" 
                                         type="text"
@@ -190,12 +183,13 @@ function LoginPage(){
                             <Field>
                                 <FieldLabel 
                                     htmlFor="password" 
-                                    className={`${passwordError? "authLabelError" : "authLabel"}`}
+                                    className={`${passwordError? "text-red-500" : "text-white"} text-base font-Andika font-bold`}
                                 >
-                                    Password
+                                    Pa
+                                    ssword
                                 </FieldLabel>
                                 <Input 
-                                    className="authInput"
+                                    className="text-lg text-Wasabi font-Andika font-medium"
                                     aria-invalid={passwordError}
                                     id="password"
                                     type="password"
@@ -206,14 +200,27 @@ function LoginPage(){
                             </Field>
                         </FieldGroup>
                     </FieldSet>
-                    <div className="w-full flex flex-col items-center gap-2">
-                        <Button onClick={handleLogin} size="sm" className="bg-Wasabi hover:bg-Wasabi2 text-black/80 text-lg font-Andika border border-black">Log In</Button>
-                        <button onClick={changeType}  className="text-xl text-black/80 font-Andika">
+                    <button
+                        className="mt-5 mb-5 p-1 pl-6 pr-6 bg-Wasabi text-lg text-black font-Andika rounded-full"
+                        onClick={handleLogin}
+                    >
+                        Login
+                    </button>
+                    <div className="w-full flex flex-col items-center gap-5">
+                        <button
+                            className="text-xl text-white font-Andika font-medium underline"
+                            onClick={changeType}  
+                        >
                             {useEmail ? ("Or log in with username")
                             : ("Or log in with email")}
                         </button>
+                        <Link 
+                            className="text-xl text-Wasabi font-Andika"
+                            to="/signUp"
+                        >
+                            Create an Account
+                        </Link>
                     </div>
-                    <Link to="/signUp" className="text-xl text-black/80 font-Andika underline">Create an Account</Link>
                 </div>
             </div>
         </>

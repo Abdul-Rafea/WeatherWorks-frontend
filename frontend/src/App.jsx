@@ -15,6 +15,7 @@ import SignUpPage from "./SignUpPage";
 import UserSettings from "./UserSettings";
 import NotificationFrame from "./NotificationFrame";
 import Portal from "./generatePortal";
+import RainAnimation from "./RainAnimation";
 
 function App() {
     const {
@@ -29,6 +30,7 @@ function App() {
             <AnimatePresence>
                 {showNotification && <NotificationFrame />}
             </AnimatePresence>
+            <RainAnimation />
             {isLoading && (
                 <Portal>
                     <Spinner className="text-Wasabi size-25" />
